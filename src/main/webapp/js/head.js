@@ -1,0 +1,16 @@
+document.writeln('<header>');
+document.writeln('	<nav id="nav">');
+document.writeln('		<ul>');
+document.writeln('			<li><a href="/" >网站首页</a></li>');
+document.writeln('			<li><a href="/" title="">个人博客模板</a></li>');
+document.writeln('			<li><a href="/" title="">图书推荐</a></li>');
+document.writeln('			<li><a href="/" title="">网站建设</a></li>');
+document.writeln('			<li><a href="/" title="">HTML5 / CSS3</a></li>');
+document.writeln('			<li><a href="/" title="">技术探讨</a></li>');
+document.writeln('			<li><a href="/" title="">慢生活</a></li>');
+document.writeln('			<li><a href="/" title="">碎言碎语</a></li>');
+document.writeln('			<li><a href="/guestbook.html" title="">留言版</a></li>');
+document.writeln('		</ul>');
+document.writeln('		<script src="js/silder.js"></script><!--获取当前页导航 高亮显示标题-->');
+document.writeln('	</nav>');
+document.writeln('</header>');
