@@ -13,6 +13,7 @@ String htmlData = request.getParameter("content1") != null ? request.getParamete
 	<script charset="utf-8" src="${sessionScope.apppath}/js/kindeditor/kindeditor.js"></script>
 	<script charset="utf-8" src="${sessionScope.apppath}/js/kindeditor/lang/zh_CN.js"></script>
 	<script charset="utf-8" src="${sessionScope.apppath}/js/kindeditor/plugins/code/prettify.js"></script>
+	<script charset="utf-8" src="${sessionScope.apppath}/js/messager/my.messager.js"></script>
 	<script>
 		KindEditor.ready(function(K) {
 			var editor1 = K.create('textarea[name="body"]', {
@@ -24,11 +25,13 @@ String htmlData = request.getParameter("content1") != null ? request.getParamete
 					var self = this;
 					K.ctrl(document, 13, function() {
 						self.sync();
-						document.forms['example'].submit();
+						//document.forms['example'].submit();
+						submit();
 					});
 					K.ctrl(self.edit.doc, 13, function() {
 						self.sync();
-						document.forms['example'].submit();
+						//document.forms['example'].submit();
+						submit();
 					});
 				}
 			});
@@ -37,17 +40,34 @@ String htmlData = request.getParameter("content1") != null ? request.getParamete
 	</script>
 </head>
 <body>
-	<%=htmlData%>
-	<form name="example" method="post" action="${sessionScope.apppath}/imarkofu/clovec.do">
+	<form id="example" name="example" method="post" >
 		type:<input type="text" name="type" /><br />
 		author:<input type="text" name="author"><br />
 		title:<input type="text" name="title" /><br />
 		summary:<input type="text" name="summary" /><br />
 		<textarea name="body" cols="100" rows="8" style="width:700px;height:200px;visibility:hidden;"><%=htmlspecialchars(htmlData)%></textarea>
 		<br />
-		<input type="submit" name="button" value="提交内容" /> (提交快捷键: Ctrl + Enter)
+		<input type="button" onclick="submit()" name="button" value="提交内容" /> (提交快捷键: Ctrl + Enter)
 	</form>
 </body>
+<script type="text/javascript">
+function submit(){
+	$.ajax({
+		type : "post",
+		dataType : "json",
+		url : "/imarkofu/clovec.do",
+		data : $('#example').serializeArray(),
+		contentType : 'application/x-www-form-urlencoded; charset=utf-8',
+		success : function(data) {
+			if (data != undefined) {
+				show_my_dmessager(data.msg);
+			} else {
+				show_my_dmessager("网络错误");
+			}
+		}
+	});
+}
+</script>
 </html>
 <%!
 private String htmlspecialchars(String str) {
