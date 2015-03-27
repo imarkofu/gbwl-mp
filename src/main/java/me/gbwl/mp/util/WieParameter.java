@@ -3,6 +3,8 @@ package me.gbwl.mp.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -21,6 +23,7 @@ public class WieParameter {
 	private long modify;
 	
 	private String	domain;
+	private List<String> types;
 	
 	private WieParameter(){ }
 	private static class Tools {
@@ -42,6 +45,8 @@ public class WieParameter {
 			is = new FileInputStream(wieFile);
 			prop.load(is);
 			domain = prop.getProperty("domain");
+			String type = prop.getProperty("type");
+			types = Arrays.asList(type.split("\\|"));
 		} catch (Exception e) {
 			logger.error("加载实时参数错误:" + e.getMessage(), e.getCause());
 			throw new ExceptionInInitializerError("加载实时参数错误！！！");
@@ -49,5 +54,10 @@ public class WieParameter {
 	}
 	public String getDomain() {
 		return domain;
+	}
+	public String getType(int index) {
+		if (index < types.size())
+			return types.get(index-1);
+		return "";
 	}
 }

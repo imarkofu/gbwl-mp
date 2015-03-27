@@ -15,7 +15,7 @@ String htmlData = request.getParameter("content1") != null ? request.getParamete
 	<script charset="utf-8" src="${sessionScope.apppath}/js/kindeditor/plugins/code/prettify.js"></script>
 	<script>
 		KindEditor.ready(function(K) {
-			var editor1 = K.create('textarea[name="content1"]', {
+			var editor1 = K.create('textarea[name="body"]', {
 				cssPath : '${sessionScope.apppath}/js/kindeditor/plugins/code/prettify.css',
 				uploadJson : '/uploadServlet',
 				fileManagerJson : '/fileManageServlet',
@@ -38,8 +38,12 @@ String htmlData = request.getParameter("content1") != null ? request.getParamete
 </head>
 <body>
 	<%=htmlData%>
-	<form name="example" method="post" action="demo.jsp">
-		<textarea name="content1" cols="100" rows="8" style="width:700px;height:200px;visibility:hidden;"><%=htmlspecialchars(htmlData)%></textarea>
+	<form name="example" method="post" action="${sessionScope.apppath}/imarkofu/clovec.do">
+		type:<input type="text" name="type" /><br />
+		author:<input type="text" name="author"><br />
+		title:<input type="text" name="title" /><br />
+		summary:<input type="text" name="summary" /><br />
+		<textarea name="body" cols="100" rows="8" style="width:700px;height:200px;visibility:hidden;"><%=htmlspecialchars(htmlData)%></textarea>
 		<br />
 		<input type="submit" name="button" value="提交内容" /> (提交快捷键: Ctrl + Enter)
 	</form>

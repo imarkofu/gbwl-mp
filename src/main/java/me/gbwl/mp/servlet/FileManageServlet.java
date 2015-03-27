@@ -38,7 +38,7 @@ public class FileManageServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		//根目录路径，可以指定绝对路径，比如 /var/www/attached/
-		String rootPath = request.getSession().getServletContext().getRealPath("/") + "attached/";
+		String rootPath = request.getSession().getServletContext().getRealPath("/") + "/attached/";
 		//根目录URL，可以指定绝对路径，比如 http://www.yoursite.com/attached/
 		String rootUrl  = WieParameter.getInstance().getDomain() + "attached/";
 		//图片扩展名

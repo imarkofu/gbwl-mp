@@ -2,33 +2,33 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>${title}</title>
+<title>$title</title>
 <meta name="keywords" content="imarkofu gbwl_cgl gbwl" />
-<meta name="description" content="${title}" />
-<link href="${main_domain}css/styles.css" rel="stylesheet">
-<link href="${main_domain}css/view.css" rel="stylesheet">
+<meta name="description" content="$title" />
+<link href="$main_domaincss/styles.css" rel="stylesheet">
+<link href="$main_domaincss/view.css" rel="stylesheet">
 <!-- 返回顶部调用 begin -->
-<link href="${main_domain}css/lrtk.css" rel="stylesheet" />
-<script type="text/javascript" src="${main_domain}js/jquery.js"></script>
-<script type="text/javascript" src="${main_domain}js/js.js"></script>
+<link href="$main_domaincss/lrtk.css" rel="stylesheet" />
+<script type="text/javascript" src="$main_domainjs/jquery.js"></script>
+<script type="text/javascript" src="$main_domainjs/js.js"></script>
 <!-- 返回顶部调用 end-->
 <!--[if lt IE 9]>
-<script src="${main_domain}js/modernizr.js"></script>
+<script src="$main_domainjs/modernizr.js"></script>
 <![endif]-->
 <script>var _hmt = _hmt || [];(function() {  var hm = document.createElement("script");  hm.src = "//hm.baidu.com/hm.js?12b3293398b51d8227d4915298f8c206";  var s = document.getElementsByTagName("script")[0];   s.parentNode.insertBefore(hm, s);})();</script>
 </head>
 <body>
-	<script type="text/javascript" src="${main_domain}js/head.js" charset="utf-8"></script>
+	<script type="text/javascript" src="$main_domainjs/head.js" charset="utf-8"></script>
 	<!--header end-->
 	<div id="mainbody">
 		<div class="blogs">
 			<div id="index_view">
 				<h2 class="t_nav">
-					<a href="/index.html">网站首页</a><a href="${nav_url}">${nav_name}</a>
+					<a href="/index.html">网站首页</a><a href="$nav_url">$nav_name</a>
 				</h2>
-				<h1 class="c_titile">${title}</h1>
-				<p class="box">发布时间：${date}<span>编辑：${author}</span></p>
-				<ul>${body}</ul>
+				<h1 class="c_titile">$title</h1>
+				<p class="box">发布时间：$date<span>编辑：$author</span></p>
+				<ul>$body</ul>
 				<div class="share">
 					<!-- Baidu Button BEGIN -->
 					<div id="bdshare" class="bdshare_t bds_tools get-codes-bdshare">
@@ -46,7 +46,7 @@
 					<!-- Baidu Button END -->
 				</div>
 				<!-- 多说评论框 start -->
-				<div class="ds-thread" data-thread-key="0" data-title="${title}" data-url="${domain}"></div>
+				<div class="ds-thread" data-thread-key="0" data-title="$title" data-url="$domain"></div>
 				<!-- 多说评论框 end -->
 			</div>
 			<!--bloglist end-->
@@ -69,10 +69,10 @@
 		<!--blogs end-->
 	</div>
 	<!--mainbody end-->
-	<script type="text/javascript" src="./js/footer.js"></script>
+	<script type="text/javascript" src="$main_domain/js/footer.js"></script>
 	<!-- jQuery仿腾讯回顶部和建议 代码开始 -->
 	<div id="tbox">
-		<a id="togbook" href="/e/tool/gbook/?bid=1"></a> <a id="gotop" href="javascript:void(0)"></a>
+		<a id="togbook" href="/guestbook.html"></a> <a id="gotop" href="javascript:void(0)"></a>
 	</div>
 	<!-- 代码结束 -->
 </body>
