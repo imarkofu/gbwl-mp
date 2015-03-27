@@ -59,6 +59,22 @@
 		<servlet-name>CreateMenuServlet</servlet-name>
 		<url-pattern>/mp/createMenu.do</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>UploadServlet</servlet-name>
+		<servlet-class>me.gbwl.mp.servlet.UploadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UploadServlet</servlet-name>
+		<url-pattern>/uploadServlet</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>FileManageServlet</servlet-name>
+		<servlet-class>me.gbwl.mp.servlet.FileManageServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FileManageServlet</servlet-name>
+		<url-pattern>/fileManageServlet</url-pattern>
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>default</servlet-name>
 		<url-pattern>*.html</url-pattern>

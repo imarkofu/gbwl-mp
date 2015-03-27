@@ -23,6 +23,9 @@
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<property name="defaultEncoding" value="UTF-8"></property>
 	</bean>
+	<mvc:interceptors>
+    	<bean class="me.gbwl.mp.webcontext.LogHandlerInterceptor"></bean>
+    </mvc:interceptors>
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
 		<property name="messageConverters">
 			<list>
