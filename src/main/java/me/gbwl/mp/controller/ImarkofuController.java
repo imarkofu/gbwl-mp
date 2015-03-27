@@ -3,12 +3,15 @@ package me.gbwl.mp.controller;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import me.gbwl.mp.base.Article;
 import me.gbwl.mp.base.StringUtil;
 import me.gbwl.mp.util.DateUtil;
 import me.gbwl.mp.util.WieParameter;
@@ -17,6 +20,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSON;
 
 /**
  * @Title: ImarkofuController.java<br>
@@ -59,8 +64,9 @@ public class ImarkofuController {
 		}
 		Date now = new Date();
 		//开始生成页面
+		String path;
 		try {
-			String path = type+"/"+DateUtil.formatDate(now, "yyyy-MM")+"/"+StringUtil.randomString(16) +".html";
+			path = type+"/"+DateUtil.formatDate(now, "yyyy-MM")+"/"+StringUtil.randomString(16) +".html";
 			String model = WieParameter.class.getClassLoader().getResource("model").getPath();
 			File modelFile = new File(model);
 			FileReader fr = new FileReader(modelFile);
@@ -88,12 +94,39 @@ public class ImarkofuController {
 			e.printStackTrace();
 			result.put("result", false);result.put("msg", "静态页面生成失败");return result;
 		}
+		//保存目录结构
+		try {
+			String articles = WieParameter.class.getClassLoader().getResource("articles").getPath();
+			File file = new File(articles);
+			FileReader fr = new FileReader(file);
+			char[] t = new char[(int) file.length()];
+			fr.read(t);
+			String content = new String(t);
+			fr.close();
+			List<Article> list = null;
+			if (StringUtil.isEmpty(content) || "".equals(content.trim())) {
+				list = new ArrayList<Article>();
+			} else {
+				list = JSON.parseArray(content, Article.class);
+				result.put("result", false);result.put("msg", "JSON转对象异常");return result;
+			}
+			Article article = new Article();
+			article.setDate(DateUtil.formatDate(now, "yyyy-MM-dd"));
+			article.setSummary(summary);
+			article.setTitle(title);
+			article.setType(Integer.parseInt(type));
+			article.setUrl(WieParameter.getInstance().getDomain()+"/"+path);
+			list.add(article);
+			FileWriter fw = new FileWriter(file, false);
+			fw.write(JSON.toJSONString(list));
+			fw.flush();
+			fw.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.put("result", false);result.put("msg", "目录更新失败");return result;
+		}
 		result.put("result", true);
 		result.put("msg", "保存成功");
 		return result;
-	}
-	
-	public static void main(String[] args) {
-		System.out.println("<title>$title</title>".replaceAll("\\$title", "标题"));
 	}
 }
