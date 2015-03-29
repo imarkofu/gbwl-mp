@@ -3,9 +3,9 @@ package me.gbwl.mp.controller;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -105,7 +105,7 @@ public class ImarkofuController {
 			fr.close();
 			List<Article> list = null;
 			if (StringUtil.isEmpty(content) || "".equals(content.trim())) {
-				list = new ArrayList<Article>();
+				list = new LinkedList<Article>();
 			} else {
 				list = JSON.parseArray(content, Article.class);
 				result.put("result", false);result.put("msg", "JSON转对象异常");return result;
@@ -116,7 +116,7 @@ public class ImarkofuController {
 			article.setTitle(title);
 			article.setType(Integer.parseInt(type));
 			article.setUrl(WieParameter.getInstance().getDomain()+"/"+path);
-			list.add(article);
+			list.add(0, article);
 			FileWriter fw = new FileWriter(file, false);
 			fw.write(JSON.toJSONString(list));
 			fw.flush();
