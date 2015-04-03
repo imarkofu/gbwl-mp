@@ -31,6 +31,9 @@ public class WieParameter {
 	private long modify;
 	
 	private String	domain;
+	private String	username;
+	private String	password;
+	private Integer maxCount;
 	private List<String> types;
 	
 	private File articlesFile;
@@ -59,11 +62,16 @@ public class WieParameter {
 			is = new FileInputStream(wieFile);
 			prop.load(is);
 			domain = prop.getProperty("domain");
+			username = prop.getProperty("username", "root");
+			password = prop.getProperty("password", "root");
+			maxCount = Integer.parseInt(prop.getProperty("maxCount", "5"));
 			String type = prop.getProperty("type");
 			types = Arrays.asList(type.split("\\|"));
 		} catch (Exception e) {
 			logger.error("加载实时参数错误:" + e.getMessage(), e.getCause());
 			throw new ExceptionInInitializerError("加载实时参数错误！！！");
+		} finally {
+			if (is != null) try { is.close(); } catch (Exception e) { }
 		}
 	}
 	public String getDomain() {
@@ -109,5 +117,14 @@ public class WieParameter {
 			}
 		}
 		return articles;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public Integer getMaxCount() {
+		return maxCount;
 	}
 }

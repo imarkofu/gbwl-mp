@@ -15,7 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import me.gbwl.mp.base.Article;
 import me.gbwl.mp.base.StringUtil;
+import me.gbwl.mp.util.BlackIP;
 import me.gbwl.mp.util.DateUtil;
+import me.gbwl.mp.util.RequestUtils;
 import me.gbwl.mp.util.WieParameter;
 
 import org.apache.log4j.Logger;
@@ -38,9 +40,40 @@ import com.alibaba.fastjson.JSON;
 public class ImarkofuController {
 
 	private static final Logger logger = Logger.getLogger(ImarkofuController.class);
+	private static Map<String, Integer> ips = new HashMap<String, Integer>();
+	private static Date date;
+	private static final String SESSION_USER = "SESSION_USER";
 	@RequestMapping(value="/clovec.do", method=RequestMethod.GET)
 	public ModelAndView clovecGet(HttpServletRequest request) {
-		return new ModelAndView("demo");
+		if (date == null) {
+			date = new Date();
+			ips.clear();
+		} else {
+			if (!DateUtil.formatDate(date, "yyyy-MM-dd").equals(DateUtil.formatDate(new Date(), "yyyy-MM-dd"))) {
+				date = new Date();	//为了保证ips不过度膨胀，每日清空该列表
+				ips.clear();
+			}
+		}
+		String ip = RequestUtils.getIpAddr(request);
+		if (BlackIP.getInstance().isBlackIP(ip)) {
+			return new ModelAndView("404");	//实际上不存在该视图，但是系统自定了404页面，因此会定向到404页面
+		}
+		Integer count = ips.get(ip)==null?0:ips.get(ips);
+		if (count > WieParameter.getInstance().getMaxCount()) {
+			BlackIP.getInstance().addBlackIP(ip);
+			return new ModelAndView("404");	//怀疑该ip是在尝试暴力破解密码
+		}
+		Object session_user = request.getSession().getAttribute(SESSION_USER);
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		if ((WieParameter.getInstance().getUsername().equals(username) && WieParameter.getInstance().getPassword().equals(password)) 
+				|| (session_user != null && session_user.equals(WieParameter.getInstance().getUsername()))) {
+			if (request.getSession().getAttribute(SESSION_USER) == null) {
+				request.getSession().setAttribute(SESSION_USER, username);
+			}
+			return new ModelAndView("demo");
+		}
+		return new ModelAndView("login");
 	}
 	
 	@RequestMapping(value="/clovec.do", method=RequestMethod.POST)
