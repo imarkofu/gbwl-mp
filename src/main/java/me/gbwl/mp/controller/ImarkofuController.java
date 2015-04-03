@@ -1,8 +1,10 @@
 package me.gbwl.mp.controller;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -16,6 +18,7 @@ import me.gbwl.mp.base.StringUtil;
 import me.gbwl.mp.util.DateUtil;
 import me.gbwl.mp.util.WieParameter;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,6 +37,7 @@ import com.alibaba.fastjson.JSON;
 @RequestMapping(value="/imarkofu")
 public class ImarkofuController {
 
+	private static final Logger logger = Logger.getLogger(ImarkofuController.class);
 	@RequestMapping(value="/clovec.do", method=RequestMethod.GET)
 	public ModelAndView clovecGet(HttpServletRequest request) {
 		return new ModelAndView("demo");
@@ -65,11 +69,13 @@ public class ImarkofuController {
 		Date now = new Date();
 		//开始生成页面
 		String path;
+		FileReader fr = null;
+		FileWriter fw = null;
 		try {
 			path = type+"/"+DateUtil.formatDate(now, "yyyy-MM")+"/"+StringUtil.randomString(16) +".html";
 			String model = WieParameter.class.getClassLoader().getResource("model").getPath();
 			File modelFile = new File(model);
-			FileReader fr = new FileReader(modelFile);
+			fr = new FileReader(modelFile);
 			char[] t = new char[(int) modelFile.length()];
 			fr.read(t);
 			String modelContent = new String(t);
@@ -85,30 +91,41 @@ public class ImarkofuController {
 			if (!file.getParentFile().exists()) {
 				file.getParentFile().mkdirs();
 			}
-			FileWriter fw = new FileWriter(file, false);
+			fw = new FileWriter(file, false);
 			fw.write(modelContent);
 			fw.flush();
-			fw.close();
-			fr.close();
+		} catch (FileNotFoundException e) {
+			logger.error("模版文件不存在：" + e.getMessage(), e.getCause());
+			result.put("result", false);result.put("msg", "模版文件不存在");return result;
+		} catch (IOException e) {
+			logger.error("读取模版或生成html页面异常：" + e.getMessage(), e.getCause());
+			result.put("result", false);result.put("msg", "读取模版或生成html页面异常");return result;
 		} catch (Exception e) {
-			e.printStackTrace();
-			result.put("result", false);result.put("msg", "静态页面生成失败");return result;
+			logger.error("读取模版或生成Html页面未知异常：" + e.getMessage(), e.getCause());
+			result.put("result", false);result.put("msg", "未知异常");return result;
+		} finally {
+			if (fw != null) try { fw.close(); } catch (Exception e) { }
+			if (fr != null) try { fr.close(); } catch (Exception e) { }
 		}
 		//保存目录结构
 		try {
 			String articles = WieParameter.class.getClassLoader().getResource("articles").getPath();
 			File file = new File(articles);
-			FileReader fr = new FileReader(file);
+			fr = new FileReader(file);
 			char[] t = new char[(int) file.length()];
 			fr.read(t);
 			String content = new String(t);
-			fr.close();
 			List<Article> list = null;
 			if (StringUtil.isEmpty(content) || "".equals(content.trim())) {
 				list = new LinkedList<Article>();
 			} else {
-				list = JSON.parseArray(content, Article.class);
-				result.put("result", false);result.put("msg", "JSON转对象异常");return result;
+				try {
+					list = JSON.parseArray(content, Article.class);
+				} catch (Exception e) {
+					logger.error("JSON转对象异常："+ e.getMessage(), e.getCause());
+					result.put("result", false);result.put("msg", "JSON转对象异常");return result;
+				}
+				
 			}
 			Article article = new Article();
 			article.setDate(DateUtil.formatDate(now, "yyyy-MM-dd"));
@@ -117,13 +134,21 @@ public class ImarkofuController {
 			article.setType(Integer.parseInt(type));
 			article.setUrl(WieParameter.getInstance().getDomain()+"/"+path);
 			list.add(0, article);
-			FileWriter fw = new FileWriter(file, false);
+			fw = new FileWriter(file, false);
 			fw.write(JSON.toJSONString(list));
 			fw.flush();
-			fw.close();
+		} catch (FileNotFoundException e) {
+			logger.error("目录文件不存在：" + e.getMessage(), e.getCause());
+			result.put("result", false);result.put("msg", "目录文件不存在");return result;
+		} catch (IOException e) {
+			logger.error("读取或写目录文件异常：" + e.getMessage(), e.getCause());
+			result.put("result", false);result.put("msg", "读取或写目录文件异常");return result;
 		} catch (Exception e) {
-			e.printStackTrace();
-			result.put("result", false);result.put("msg", "目录更新失败");return result;
+			logger.error("更新目录文件未知异常：" + e.getMessage(), e.getCause());
+			result.put("result", false);result.put("msg", "未知异常");return result;
+		} finally {
+			if (fw != null) try { fw.close(); } catch (Exception e) { }
+			if (fr != null) try { fr.close(); } catch (Exception e) { }
 		}
 		result.put("result", true);
 		result.put("msg", "保存成功");
