@@ -45,7 +45,7 @@ public class BlackIP {
 			String line = "";
 			blackIps = new ArrayList<String>();
 			while ((line = br.readLine()) != null) {
-				if (StringUtil.isEmpty(line)) {
+				if (!StringUtil.isEmpty(line)) {
 					line = line.trim();
 					if (StringUtil.isIP(line)) {
 						blackIps.add(line);

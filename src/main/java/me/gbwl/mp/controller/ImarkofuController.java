@@ -45,6 +45,28 @@ public class ImarkofuController {
 	private static final String SESSION_USER = "SESSION_USER";
 	@RequestMapping(value="/clovec.do", method=RequestMethod.GET)
 	public ModelAndView clovecGet(HttpServletRequest request) {
+		String ip = RequestUtils.getIpAddr(request);
+		if (BlackIP.getInstance().isBlackIP(ip)) {
+			return new ModelAndView("login");
+		}
+		Object session_user = request.getSession().getAttribute(SESSION_USER);
+		if (session_user != null && session_user.equals(WieParameter.getInstance().getUsername())) {
+			return new ModelAndView("demo");
+		}
+		return new ModelAndView("login");
+	}
+	
+	/**
+	 * 避免密码错误之后刷新浏览器404错误
+	 * @return
+	 */
+	@RequestMapping(value="/checkLogin.do", method=RequestMethod.GET)
+	public ModelAndView checkLogin() {
+		return new ModelAndView("login");
+	}
+	
+	@RequestMapping(value="/checkLogin.do", method=RequestMethod.POST)
+	public ModelAndView checkLogin(HttpServletRequest request) {
 		if (date == null) {
 			date = new Date();
 			ips.clear();
@@ -56,23 +78,24 @@ public class ImarkofuController {
 		}
 		String ip = RequestUtils.getIpAddr(request);
 		if (BlackIP.getInstance().isBlackIP(ip)) {
-			return new ModelAndView("404");	//实际上不存在该视图，但是系统自定了404页面，因此会定向到404页面
+			return new ModelAndView("login");
 		}
-		Integer count = ips.get(ip)==null?0:ips.get(ips);
+		Integer count = ips.get(ip)==null?0:ips.get(ip);
 		if (count > WieParameter.getInstance().getMaxCount()) {
-			BlackIP.getInstance().addBlackIP(ip);
-			return new ModelAndView("404");	//怀疑该ip是在尝试暴力破解密码
+			BlackIP.getInstance().addBlackIP(ip);	//怀疑该ip是在尝试暴力破解密码
+			ips.remove(ip);	//已经加入黑名单故从ips中删去以节省内存
+			return new ModelAndView("login");
 		}
-		Object session_user = request.getSession().getAttribute(SESSION_USER);
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		if ((WieParameter.getInstance().getUsername().equals(username) && WieParameter.getInstance().getPassword().equals(password)) 
-				|| (session_user != null && session_user.equals(WieParameter.getInstance().getUsername()))) {
+		if ((WieParameter.getInstance().getUsername().equals(username) && WieParameter.getInstance().getPassword().equals(password))) {
 			if (request.getSession().getAttribute(SESSION_USER) == null) {
 				request.getSession().setAttribute(SESSION_USER, username);
 			}
 			return new ModelAndView("demo");
 		}
+		ips.remove(ip);
+		ips.put(ip, ++count);
 		return new ModelAndView("login");
 	}
 	
