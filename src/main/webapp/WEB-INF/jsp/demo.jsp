@@ -1,8 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%
-request.setCharacterEncoding("UTF-8");
-String htmlData = request.getParameter("content1") != null ? request.getParameter("content1") : "";
-%>
 <!doctype html>
 <html>
 <head>
@@ -41,11 +37,17 @@ String htmlData = request.getParameter("content1") != null ? request.getParamete
 </head>
 <body>
 	<form id="example" name="example" method="post" >
-		type:<input type="text" name="type" /><br />
+		type:<select name="type">
+			<option value="1">Java</option>
+			<option value="2">Android</option>
+			<option value="3">HTML5 / CSS3</option>
+			<option value="4">Linux</option>
+			<option value="5">技术探讨</option>
+		</select><br />
 		author:<input type="text" name="author"><br />
 		title:<input type="text" name="title" /><br />
 		summary:<input type="text" name="summary" /><br />
-		<textarea name="body" cols="100" rows="8" style="width:700px;height:200px;visibility:hidden;"><%=htmlspecialchars(htmlData)%></textarea>
+		<textarea name="body" cols="100" rows="8" style="width:700px;height:200px;visibility:hidden;"></textarea>
 		<br />
 		<input type="button" onclick="submit()" name="button" value="提交内容" /> (提交快捷键: Ctrl + Enter)
 	</form>
