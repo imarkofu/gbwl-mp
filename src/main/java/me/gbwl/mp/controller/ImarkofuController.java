@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import me.gbwl.mp.base.Article;
 import me.gbwl.mp.base.StringUtil;
@@ -61,7 +62,11 @@ public class ImarkofuController {
 	 * @return
 	 */
 	@RequestMapping(value="/checkLogin.do", method=RequestMethod.GET)
-	public ModelAndView checkLogin() {
+	public ModelAndView checkLogin(HttpSession session) {
+		Object session_user = session.getAttribute(SESSION_USER);
+		if (session_user != null && session_user.equals(WieParameter.getInstance().getUsername())) {
+			return new ModelAndView("demo");
+		}
 		return new ModelAndView("login");
 	}
 	
