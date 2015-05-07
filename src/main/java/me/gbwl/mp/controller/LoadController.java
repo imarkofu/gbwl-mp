@@ -1,7 +1,7 @@
 package me.gbwl.mp.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import me.gbwl.mp.base.Article;
 import me.gbwl.mp.base.PageBean;
 import me.gbwl.mp.base.StringUtil;
+import me.gbwl.mp.util.WieParameter;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class LoadController {
 
-	private static LinkedList<Article> articles = new LinkedList<Article>();
 	@RequestMapping(value="/load.do", method=RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> load(HttpServletRequest request) {
@@ -33,12 +33,30 @@ public class LoadController {
 		if (!StringUtil.isNumeric(pageSize) || Integer.parseInt(pageSize) <= 4 || Integer.parseInt(pageSize) >= 50) {
 			pageSize = "10";
 		}
-		List<Article> list = articles.subList((Integer.parseInt(pageNo)-1)*Integer.parseInt(pageSize), Integer.parseInt(pageNo) * Integer.parseInt(pageSize));
+		List<Article> articles = WieParameter.getInstance().getArticlesCache();
+		if (StringUtil.isNumeric(type) && Integer.parseInt(type) > 0 && Integer.parseInt(type) <= WieParameter.getInstance().getTypeSize()) {
+			for (Article article : articles) {
+				if (article.getType() != Integer.parseInt(type)) {
+					articles.remove(article);
+				}
+			}
+		}
 		PageBean<Article> pageBean = new PageBean<Article>();
 		pageBean.setPageNo(Integer.parseInt(pageNo));
 		pageBean.setPageSize(Integer.parseInt(pageSize));
-		
-		
+		int from = (Integer.parseInt(pageNo)-1)*Integer.parseInt(pageSize);
+		int to = Integer.parseInt(pageNo) * Integer.parseInt(pageSize);
+		if (articles == null || articles.size() <= 0 || from >= articles.size()) {
+			pageBean.setList(new ArrayList<Article>());
+			pageBean.setRowCount(0);
+		} else {
+			if (to > articles.size())
+				to = articles.size();
+			pageBean.setList(articles.subList(from, to));
+			pageBean.setRowCount(articles.size());
+		}
+		result.put("result", true);
+		result.put("pageBean", pageBean);
 		return result;
 	}
 }

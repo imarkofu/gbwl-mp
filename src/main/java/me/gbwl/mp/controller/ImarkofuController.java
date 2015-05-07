@@ -188,7 +188,6 @@ public class ImarkofuController {
 					logger.error("JSON转对象异常："+ e.getMessage(), e.getCause());
 					result.put("result", false);result.put("msg", "JSON转对象异常");return result;
 				}
-				
 			}
 			Article article = new Article();
 			article.setDate(DateUtil.formatDate(now, "yyyy-MM-dd"));

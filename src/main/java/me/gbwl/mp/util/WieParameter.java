@@ -82,6 +82,9 @@ public class WieParameter {
 			return types.get(index-1);
 		return "";
 	}
+	public Integer getTypeSize() {
+		return types.size();
+	}
 	public List<Article> getArticlesCache() {
 		if (articlesFile == null || articlesFile.lastModified() != articlesFileModify) {
 			FileReader fr = null;
