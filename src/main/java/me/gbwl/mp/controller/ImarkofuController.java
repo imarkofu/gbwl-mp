@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -148,7 +149,7 @@ public class ImarkofuController {
 			modelContent = modelContent.replaceAll("\\$nav_name", WieParameter.getInstance().getType(Integer.parseInt(type)));
 			modelContent = modelContent.replaceAll("\\$date", DateUtil.formatDate(now, "yyyy-MM-dd"));
 			modelContent = modelContent.replaceAll("\\$author", author);
-			modelContent = modelContent.replaceAll("\\$body", body);
+			modelContent = modelContent.replaceAll("\\$body", Matcher.quoteReplacement(body));
 			modelContent = modelContent.replaceAll("\\$domain", WieParameter.getInstance().getDomain()+"/"+path);
 			File file = new File(request.getSession().getServletContext().getRealPath("/")+"/"+path);
 			if (!file.getParentFile().exists()) {
