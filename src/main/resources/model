@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>$title</title>
-<meta name="keywords" content="imarkofu gbwl_cgl gbwl" />
+<meta name="keywords" content="imarkofu gbwl_cgl gbwl $title" />
 <meta name="description" content="$title" />
 <link href="$main_domaincss/styles.css" rel="stylesheet">
 <link href="$main_domaincss/view.css" rel="stylesheet">

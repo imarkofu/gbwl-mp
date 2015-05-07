@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
@@ -105,6 +106,7 @@ public class ImarkofuController {
 	}
 	
 	@RequestMapping(value="/clovec.do", method=RequestMethod.POST)
+	@ResponseBody
 	public Map<String, Object> clovecPost(HttpServletRequest request) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		String type = request.getParameter("type");
@@ -148,7 +150,7 @@ public class ImarkofuController {
 			modelContent = modelContent.replaceAll("\\$author", author);
 			modelContent = modelContent.replaceAll("\\$body", body);
 			modelContent = modelContent.replaceAll("\\$domain", WieParameter.getInstance().getDomain()+"/"+path);
-			File file = new File(request.getSession().getServletContext().getRealPath("/")+path);
+			File file = new File(request.getSession().getServletContext().getRealPath("/")+"/"+path);
 			if (!file.getParentFile().exists()) {
 				file.getParentFile().mkdirs();
 			}

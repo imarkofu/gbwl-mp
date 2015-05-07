@@ -9,8 +9,9 @@
 	<script charset="utf-8" src="${sessionScope.apppath}/js/kindeditor/kindeditor.js"></script>
 	<script charset="utf-8" src="${sessionScope.apppath}/js/kindeditor/lang/zh_CN.js"></script>
 	<script charset="utf-8" src="${sessionScope.apppath}/js/kindeditor/plugins/code/prettify.js"></script>
+	<script charset="utf-8" src="${sessionScope.apppath}/js/jquery.js"></script>
 	<script charset="utf-8" src="${sessionScope.apppath}/js/messager/my.messager.js"></script>
-	<script>
+	<script type="text/javascript">
 		KindEditor.ready(function(K) {
 			var editor1 = K.create('textarea[name="body"]', {
 				cssPath : '${sessionScope.apppath}/js/kindeditor/plugins/code/prettify.css',
@@ -22,12 +23,12 @@
 					K.ctrl(document, 13, function() {
 						self.sync();
 						//document.forms['example'].submit();
-						submit();
+						my_submit();
 					});
 					K.ctrl(self.edit.doc, 13, function() {
 						self.sync();
 						//document.forms['example'].submit();
-						submit();
+						my_submit();
 					});
 				}
 			});
@@ -49,11 +50,11 @@
 		summary:<input type="text" name="summary" /><br />
 		<textarea name="body" cols="100" rows="8" style="width:700px;height:200px;visibility:hidden;"></textarea>
 		<br />
-		<input type="button" onclick="submit()" name="button" value="提交内容" /> (提交快捷键: Ctrl + Enter)
+		<input type="button" onclick="my_submit()" name="button" value="提交内容" /> (提交快捷键: Ctrl + Enter)
 	</form>
 </body>
 <script type="text/javascript">
-function submit(){
+function my_submit(){
 	$.ajax({
 		type : "post",
 		dataType : "json",
