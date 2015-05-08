@@ -184,7 +184,7 @@ public class ImarkofuController {
 				list = new LinkedList<Article>();
 			} else {
 				try {
-					list = JSON.parseArray(content, Article.class);
+					list = JSON.parseArray(content.trim(), Article.class);
 				} catch (Exception e) {
 					logger.error("JSON转对象异常："+ e.getMessage(), e.getCause());
 					result.put("result", false);result.put("msg", "JSON转对象异常");return result;

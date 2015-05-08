@@ -96,11 +96,12 @@ public class WieParameter {
 				char[] t = new char[(int) articlesFile.length()];
 				fr.read(t);	//内容理论上应该不会太大，直接一次行读取全部内容，大文件不建议这样读取
 				String content = new String(t);
+				logger.info("articles=" + content.trim());
 				if (StringUtil.isEmpty(content)) {
 					articles = new ArrayList<Article>();
 				} else {
 					try {
-						articles = JSON.parseArray(content, Article.class);
+						articles = JSON.parseArray(content.trim(), Article.class);
 					} catch (Exception e) {
 						logger.error("JSON转对象异常：" + e.getMessage(), e.getCause());
 						articles = new ArrayList<Article>();
