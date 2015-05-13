@@ -11,6 +11,6 @@ document.writeln('			<li><a href="/6/index.html" title="慢生活">慢生活</a>
 document.writeln('			<li><a href="/7/index.html" title="碎言碎语">碎言碎语</a></li>');
 document.writeln('			<li><a href="/guestbook.html" title="留言板">留言版</a></li>');
 document.writeln('		</ul>');
-document.writeln('		<script src="js/silder.js"></script><!--获取当前页导航 高亮显示标题-->');
+document.writeln('		<script src="/js/silder.js"></script><!--获取当前页导航 高亮显示标题-->');
 document.writeln('	</nav>');
 document.writeln('</header>');
