@@ -93,9 +93,9 @@ function searchInit(pageNo, pageSize) {
 				if (data.pageBean.list != null && data.pageBean.list.length > 0) {
 					var tmp = "";
 					for (var i = 0; i < data.pageBean.list.length; i ++) {
-						tmp += ('<li><div class="arrow_box"><div class="ti"></div><div class="ci"></div>'+
+						tmp += ('<li style="border:0px;"><div class="arrow_box">'+
 								'<h2 class="title"><a href="'+data.pageBean.list[i].url+'" target="_blank">'+data.pageBean.list[i].title+'</a></h2>'+
-								'<ul class="textinfo"><a href="'+data.pageBean.list[i].url+'"><img src="images/s1.jpg"></a>'+
+								'<ul class="textinfo"><a href="'+data.pageBean.list[i].url+'"><img src="/images/s1.jpg"></a>'+
 								'<p>'+data.pageBean.list[i].summary+'</p></ul><ul class="details">'+
 								'<li class="likes"><a href="'+data.pageBean.list[i].url+'">0</a></li>'+
 								'<li class="comments"><a href="'+data.pageBean.list[i].url+'">0</a></li>'+

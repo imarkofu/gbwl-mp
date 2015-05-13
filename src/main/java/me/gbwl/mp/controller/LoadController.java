@@ -33,11 +33,11 @@ public class LoadController {
 		if (!StringUtil.isNumeric(pageSize) || Integer.parseInt(pageSize) <= 4 || Integer.parseInt(pageSize) >= 50) {
 			pageSize = "10";
 		}
-		List<Article> articles = WieParameter.getInstance().getArticlesCache();
+		List<Article> articles = new ArrayList<Article>(WieParameter.getInstance().getArticlesCache());
 		if (StringUtil.isNumeric(type) && Integer.parseInt(type) > 0 && Integer.parseInt(type) <= WieParameter.getInstance().getTypeSize()) {
-			for (Article article : articles) {
-				if (article.getType() != Integer.parseInt(type)) {
-					articles.remove(article);
+			for (int i = 0; i < articles.size(); i ++) {
+				if (articles.get(i).getType() != Integer.parseInt(type)) {
+					articles.remove(i --);
 				}
 			}
 		}
