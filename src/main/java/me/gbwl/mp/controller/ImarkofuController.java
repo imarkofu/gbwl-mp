@@ -150,7 +150,7 @@ public class ImarkofuController {
 			modelContent = modelContent.replaceAll("\\$date", DateUtil.formatDate(now, "yyyy-MM-dd"));
 			modelContent = modelContent.replaceAll("\\$author", author);
 			modelContent = modelContent.replaceAll("\\$body", Matcher.quoteReplacement(body));
-			modelContent = modelContent.replaceAll("\\$domain", WieParameter.getInstance().getDomain()+"/"+path);
+			modelContent = modelContent.replaceAll("\\$domain", WieParameter.getInstance().getDomain()+path);
 			File file = new File(request.getSession().getServletContext().getRealPath("/")+"/"+path);
 			if (!file.getParentFile().exists()) {
 				file.getParentFile().mkdirs();
@@ -195,7 +195,7 @@ public class ImarkofuController {
 			article.setSummary(summary);
 			article.setTitle(title);
 			article.setType(Integer.parseInt(type));
-			article.setUrl(WieParameter.getInstance().getDomain()+"/"+path);
+			article.setUrl(WieParameter.getInstance().getDomain()+path);
 			list.add(0, article);
 			fw = new FileWriter(file, false);
 			fw.write(JSON.toJSONString(list));

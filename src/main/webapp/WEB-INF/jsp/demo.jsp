@@ -44,6 +44,7 @@
 			<option value="3">HTML5 / CSS3</option>
 			<option value="4">Linux</option>
 			<option value="5">技术探讨</option>
+			<option value="6">慢生活</option>
 		</select><br />
 		author:<input type="text" name="author"><br />
 		title:<input type="text" name="title" /><br />
