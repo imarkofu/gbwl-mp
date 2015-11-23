@@ -89,6 +89,7 @@ public class StringUtil {
 	 * @param string
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> List<T> stringToList(String string, Class<T> c) {
 		String[] strs = string.split("[\\s|,|\\.|;|；]+");
 		List<T> list = new LinkedList<T>();
@@ -125,6 +126,7 @@ public class StringUtil {
 		return sb.deleteCharAt(sb.length() - 1).toString();
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static String getList2String(List list, String split) {
 		if (list == null || list.size() <= 0)
 			return null;
@@ -1052,6 +1054,7 @@ public class StringUtil {
 	 *            dot
 	 * @return result
 	 */
+	@SuppressWarnings("rawtypes")
 	public static List getList(String fullstr, String indexofstr) {
 		List<String> list = new ArrayList<String>();
 		if (fullstr == null) {
@@ -1101,6 +1104,7 @@ public class StringUtil {
 	 *            source
 	 * @return result
 	 */
+	@SuppressWarnings("rawtypes")
 	public static String[] list2StringArray(List list) {
 		if (list == null) {
 			return null;

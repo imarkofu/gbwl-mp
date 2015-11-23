@@ -121,7 +121,8 @@ public class PageBean<T>
     this.startRow = startRow;
   }
 
-  public List<String> getPageList() {
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+public List<String> getPageList() {
     if (this.pageCount > 0) {
       this.pageList = new ArrayList();
 
