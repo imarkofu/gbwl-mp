@@ -17,7 +17,7 @@
 <![endif]-->
 <script type="text/javascript">
 $(function(){
-	searchInit(1, 5);
+	searchInit(1, 6);
 });
 </script>
 </head>
@@ -51,9 +51,10 @@ $(function(){
 		<!--info end-->
 		<div class="blank"></div>
 		<div class="blogs">
-			<ul class="bloglist">
-				
-			</ul>
+			<div style="float: left;">
+			<ul class="bloglist"></ul>
+			<div class="page"></div>
+			</div>
 			<!--bloglist end-->
 			<aside>
 				<div class="tuijian">
@@ -67,9 +68,9 @@ $(function(){
 					</form>
 				</div>
 				<div>
-                                        <h2>最近访客</h2>
-                                        <ul class="ds-recent-visitors"  data-num-items="24"></ul>
-                                </div>
+					<h2>最近访客</h2>
+					<ul class="ds-recent-visitors"  data-num-items="24"></ul>
+				</div>
 				<div class="viny">
 					<dl>
 						<dt class="art">
@@ -85,7 +86,7 @@ $(function(){
 							<span></span>所属专辑：《赵小雷》
 						</dd>
 						<dd class="icon-like">
-							<span></span><a href="/">喜欢</a>
+							<span></span><a href="/index.html?love=0421">喜欢</a>
 						</dd>
 						<dd class="music">
 							<audio src="images/nf.mp3" controls></audio>
@@ -127,6 +128,22 @@ function searchInit(pageNo, pageSize) {
 								'<li class="icon-time"><a href="#">'+data.pageBean.list[i].date+'</a></li></ul></div></li>');
 					}
 					$(".bloglist").html(tmp);
+					// page
+					var tmp = '<a title="Total record"><b>'+data.pageBean.rowCount+'</b></a>';
+					tmp += ('<a href="javascript:void(0);" onclick="searchInit(1, 6)">&lt;&lt;</a>');
+					if (data.pageBean.priorNo==data.pageBean.pageNo) {
+						tmp += ('<b>&lt;</b>');
+					} else {
+						tmp += ('<a href="javascript:void(0);" onclick="searchInit('+data.pageBean.priorNo+', 6)">&lt;</a>');
+					}
+					tmp += ('<b>'+data.pageBean.priorNo+'</b>');
+					if (data.pageBean.nextNo==data.pageBean.pageNo) {
+						tmp += ('<b>&gt;</b>');
+					} else {
+						tmp += ('<a href="javascript:void(0);" onclick="searchInit('+data.pageBean.nextNo+', 6)">&gt;</a>');
+					}
+					tmp += ('<a href="javascript:void(0);" onclick="searchInit('+data.pageBean.pageCount+', 6)">&gt;&gt;</a>');
+					$(".page").html(tmp);
 				}
 			} else {
 				alert("网络错误");

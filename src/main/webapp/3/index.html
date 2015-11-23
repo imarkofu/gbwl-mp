@@ -17,7 +17,7 @@
 <![endif]-->
 <script type="text/javascript">
 $(function(){
-	searchInit(1, 5);
+	searchInit(1, 6);
 });
 </script>
 </head>
@@ -27,9 +27,10 @@ $(function(){
 	<div id="mainbody">
 		<div class="blogs">
 			<!-- <div id="index_view" style="background: #333;"><h2 class="t_nav"><a href="/">网站首页</a><a href="/">慢生活</a></h2></div> -->
-			<ul class="bloglist">
-				
-			</ul>
+			<div style="float: left;">
+			<ul class="bloglist"></ul>
+			<div class="page"></div>
+			</div>
 			<!--bloglist end-->
 			<aside>
 				<div class="tuijian">
@@ -41,8 +42,7 @@ $(function(){
 						<li><span><strong>4</strong></span><a href="/">Green绿色小清新的夏天-个人博客模板</a></li>
 						<li><span><strong>5</strong></span><a href="/">女生清新个人博客网站模板</a></li>
 						<li><span><strong>6</strong></span><a href="/">Wedding-婚礼主题、情人节网站模板</a></li>
-						<li><span><strong>7</strong></span><a href="/">Column三栏布局
-								个人网站模板</a></li>
+						<li><span><strong>7</strong></span><a href="/">Column三栏布局个人网站模板</a></li>
 						<li><span><strong>8</strong></span><a href="/">时间煮雨-个人网站模板</a></li>
 						<li><span><strong>9</strong></span><a href="/">花气袭人是酒香—个人网站模板</a></li>
 					</ol>
@@ -50,18 +50,7 @@ $(function(){
 				
 				<div class="clicks">
 					<h2>热门点击</h2>
-					<ol>
-						<li><span><a href="/">慢生活</a></span><a href="/">有一种思念，是淡淡的幸福,一个心情一行文字</a></li>
-						<li><span><a href="/">爱情美文</a></span><a href="/">励志人生-要做一个潇洒的女人</a></li>
-						<li><span><a href="/">慢生活</a></span><a href="/">女孩都有浪漫的小情怀——浪漫的求婚词</a></li>
-						<li><span><a href="/">博客模板</a></span><a href="/">Green绿色小清新的夏天-个人博客模板</a></li>
-						<li><span><a href="/">女生个人博客</a></span><a href="/">女生清新个人博客网站模板</a></li>
-						<li><span><a href="/">Wedding</a></span><a href="/">Wedding-婚礼主题、情人节网站模板</a></li>
-						<li><span><a href="/">三栏布局</a></span><a href="/">Column三栏布局
-								个人网站模板</a></li>
-						<li><span><a href="/">个人网站模板</a></span><a href="/">时间煮雨-个人网站模板</a></li>
-						<li><span><a href="/">古典风格</a></span><a href="/">花气袭人是酒香—个人网站模板</a></li>
-					</ol>
+					<ul class="ds-top-threads" data-range="monthly" data-num-items="8"></ul>
 				</div>
 				<div class="search">
 					<form class="searchform" method="get" action="#">
@@ -104,6 +93,22 @@ function searchInit(pageNo, pageSize) {
 								'<li class="icon-time"><a href="#">'+data.pageBean.list[i].date+'</a></li></ul></div></li>');
 					}
 					$(".bloglist").html(tmp);
+					// page
+					var tmp = '<a title="Total record"><b>'+data.pageBean.rowCount+'</b></a>';
+					tmp += ('<a href="javascript:void(0);" onclick="searchInit(1, 6)">&lt;&lt;</a>');
+					if (data.pageBean.priorNo==data.pageBean.pageNo) {
+						tmp += ('<b>&lt;</b>');
+					} else {
+						tmp += ('<a href="javascript:void(0);" onclick="searchInit('+data.pageBean.priorNo+', 6)">&lt;</a>');
+					}
+					tmp += ('<b>'+data.pageBean.priorNo+'</b>');
+					if (data.pageBean.nextNo==data.pageBean.pageNo) {
+						tmp += ('<b>&gt;</b>');
+					} else {
+						tmp += ('<a href="javascript:void(0);" onclick="searchInit('+data.pageBean.nextNo+', 6)">&gt;</a>');
+					}
+					tmp += ('<a href="javascript:void(0);" onclick="searchInit('+data.pageBean.pageCount+', 6)">&gt;&gt;</a>');
+					$(".page").html(tmp);
 				}
 			} else {
 				alert("网络错误");
@@ -120,5 +125,17 @@ function searchInit(pageNo, pageSize) {
 		var s = document.getElementsByTagName("script")[0];
 		s.parentNode.insertBefore(hm, s);
 	})();
+</script>
+
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"imarkofu"};
+        (function() {
+                var ds = document.createElement('script');
+                ds.type = 'text/javascript';ds.async = true;
+                ds.src = 'http://static.duoshuo.com/embed.js';
+                ds.charset = 'UTF-8';
+                (document.getElementsByTagName('head')[0]
+                || document.getElementsByTagName('body')[0]).appendChild(ds);
+        })();
 </script>
 </html>
