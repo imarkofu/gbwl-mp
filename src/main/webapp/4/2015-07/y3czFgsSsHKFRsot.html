@@ -1,0 +1,224 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CentOS 6.5安全加固及性能优化</title>
+<meta name="keywords" content="imarkofu gbwl_cgl gbwl CentOS 6.5安全加固及性能优化" />
+<meta name="description" content="CentOS 6.5安全加固及性能优化" />
+<link href="http://www.imarkofu.com/css/styles.css" rel="stylesheet">
+<link href="http://www.imarkofu.com/css/view.css" rel="stylesheet">
+<!-- 返回顶部调用 begin -->
+<link href="http://www.imarkofu.com/css/lrtk.css" rel="stylesheet" />
+<script type="text/javascript" src="http://www.imarkofu.com/js/jquery.js"></script>
+<script type="text/javascript" src="http://www.imarkofu.com/js/js.js"></script>
+<!-- 返回顶部调用 end-->
+<!--[if lt IE 9]>
+<script src="http://www.imarkofu.com/js/modernizr.js"></script>
+<![endif]-->
+<script>var _hmt = _hmt || [];(function() {  var hm = document.createElement("script");  hm.src = "//hm.baidu.com/hm.js?12b3293398b51d8227d4915298f8c206";  var s = document.getElementsByTagName("script")[0];   s.parentNode.insertBefore(hm, s);})();</script>
+</head>
+<body>
+	<script type="text/javascript" src="http://www.imarkofu.com/js/head.js" charset="utf-8"></script>
+	<!--header end-->
+	<div id="mainbody">
+		<div class="blogs">
+			<div id="index_view">
+				<h2 class="t_nav">
+					<a href="/index.html">网站首页</a><a href="http://www.imarkofu.com/4/index.html">Linux</a>
+				</h2>
+				<h1 class="c_titile">CentOS 6.5安全加固及性能优化</h1>
+				<p class="box">发布时间：2015-07-19<span>编辑：imarkofu</span></p>
+				<ul><p>
+	<strong>说明：</strong>经常玩Linux系统的朋友多多少少也知道些系统参数优化和怎样增强系统安全性，系统默认的一些参数都是比较保守的，所以我们可以通过调整系统参数来提高系统内存、CPU、内核资源的占用，通过禁用不必要的服务、端口，来提高系统的安全性，更好的发挥系统的可用性。通过自己对Linux了解，对系统调优做了如下小结：
+</p>
+<p>
+	<br />
+</p>
+<p>
+	<strong>操作系统：</strong>CentOS 6.5_x64最小化安装
+</p>
+<p>
+	<br />
+</p>
+<h3>
+	1、主机名设置
+</h3>
+<p>
+<pre class="prettyprint lang-bsh">[root@localhost~]# vi /etc/sysconfig/network
+HOSTNAME=test.com
+[root@localhost~]# hostname test.com  #临时生效</pre>
+	<h3>
+		2、关闭SELinux
+	</h3>
+<pre class="prettyprint lang-js">[root@localhost~]# vi /etc/selinux/config
+SELINUX=disabled
+[root@localhost~]# setenforce #临时生效
+[root@localhost~]# getenforce #查看selinux状态</pre>
+	<h3>
+		3、清空防火墙并设置规则
+	</h3>
+<pre class="prettyprint lang-bsh">[root@localhost~]# iptables -F   #清楚防火墙规则
+[root@localhost~]# iptables -L   #查看防火墙规则
+[root@localhost~]# iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+[root@localhost~]# iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+[root@localhost~]# iptables -A INPUT -p tcp --dport 53 -j ACCEPT
+[root@localhost~]# iptables -A INPUT -p udp --dport 53 -j ACCEPT
+[root@localhost~]# iptables -A INPUT -p udp --dport 123 -j ACCEPT
+[root@localhost~]# iptables -A INPUT -p icmp -j ACCEPT
+[root@localhost~]# iptables -P INPUT DROP
+[root@localhost~]# /etc/init.d/iptables save</pre>
+	<p>
+		#根据需求开启相应端口
+	</p>
+<img src="http://www.imarkofu.com/attached/image/20150719/20150719154951_254.jpg" alt="" />
+</p>
+<p>
+	<h3>
+		4、添加普通用户并进行sudo授权管理
+	</h3>
+<pre class="prettyprint lang-bsh">[root@localhost~]# useradd user
+[root@localhost~]# echo "123456" | passwd --stdin user  #设置密码
+[root@localhost~]# vi /etc/sudoers  #或visudo打开，添加user用户所有权限
+root    ALL=(ALL)       ALL
+user    ALL=(ALL)       ALL</pre>
+	<h3>
+		5、禁用root远程登录
+	</h3>
+<pre class="prettyprint lang-bsh">[root@localhost~]# vi /etc/ssh/sshd_config
+PermitRootLoginno
+PermitEmptyPasswords no #禁止空密码登录
+UseDNSno #关闭DNS查询</pre>
+	<h3>
+		6、关闭不必要开机自启动服务
+	</h3>
+<img src="http://www.imarkofu.com/attached/image/20150719/20150719155205_139.jpg" alt="" />
+</p>
+<p>
+	<h3>
+		7、删除不必要的系统用户
+	</h3>
+<img src="http://www.imarkofu.com/attached/image/20150719/20150719155310_256.jpg" alt="" />
+</p>
+<p>
+	<h3>
+		8、关闭重启ctl-alt-delete组合键
+	</h3>
+<pre class="prettyprint lang-bsh">[root@localhost ~]# vi /etc/init/control-alt-delete.conf
+#exec /sbin/shutdown -r now "Control-Alt-Deletepressed"  #注释掉</pre>
+	<h3>
+		9、调整文件描述符大小
+	</h3>
+<pre class="prettyprint lang-bsh">[root@localhost ~]# ulimit –n #默认是1024
+1024
+[root@localhost ~]# echo "ulimit -SHn 102400"&amp;gt;&amp;gt; /etc/rc.local   #设置开机自动生效</pre>
+	<h3>
+		10、去除系统相关信息<span style="font-size:12px;font-weight:normal;line-height:1.5;"></span>
+	</h3>
+<pre class="prettyprint lang-bsh">[root@localhost ~]# echo "Welcome to Server" &amp;gt;/etc/issue
+[root@localhost ~]# echo "Welcome to Server" &amp;gt;/etc/redhat-release</pre>
+	<h3>
+		11、修改history记录
+	</h3>
+<pre class="prettyprint lang-bsh">[root@localhost ~]# vi /etc/profile  #修改记录10个
+HISTSIZE=10</pre>
+	<h3>
+		12、同步系统时间
+	</h3>
+<pre class="prettyprint lang-bsh">[root@localhost ~]# cp /usr/share/zoneinfo/Asia/Shanghai/etc/localtime  #设置Shanghai时区
+[root@localhost ~]# ntpdate cn.pool.ntp.org ；hwclock–w  #同步时间并写入blos硬件时间
+[root@localhost ~]# crontab –e     #设置任务计划每天零点同步一次
+0 * * * * /usr/sbin/ntpdate cn.pool.ntp.org ; hwclock -w</pre>
+	<h3>
+		13、内核参数优化
+	</h3>
+</p>
+<p>
+<pre class="prettyprint lang-bsh">[root@localhost ~]# vi /etc/sysctl.conf    #末尾添加如下参数
+net.ipv4.tcp_syncookies = 1            #1是开启SYN Cookies，当出现SYN等待队列溢出时，启用Cookies来处，理，可防范少量SYN攻击，默认是0关闭
+net.ipv4.tcp_tw_reuse = 1             #1是开启重用，允许讲TIME_AIT sockets重新用于新的TCP连接，默认是0关闭
+net.ipv4.tcp_tw_recycle = 1            #TCP失败重传次数，默认是15，减少次数可释放内核资源
+net.ipv4.ip_local_port_range = 4096 65000  #应用程序可使用的端口范围
+net.ipv4.tcp_max_tw_buckets = 5000     #系统同时保持TIME_WAIT套接字的最大数量，如果超出这个数字，TIME_WATI套接字将立刻被清除并打印警告信息，默认180000
+net.ipv4.tcp_max_syn_backlog = 4096    #进入SYN宝的最大请求队列，默认是1024
+net.core.netdev_max_backlog =  10240  #允许送到队列的数据包最大设备队列，默认300
+net.core.somaxconn = 2048              #listen挂起请求的最大数量，默认128
+net.core.wmem_default = 8388608        #发送缓存区大小的缺省值
+net.core.rmem_default = 8388608        #接受套接字缓冲区大小的缺省值（以字节为单位）
+net.core.rmem_max = 16777216           #最大接收缓冲区大小的最大值
+net.core.wmem_max = 16777216           #发送缓冲区大小的最大值
+net.ipv4.tcp_synack_retries = 2        #SYN-ACK握手状态重试次数，默认5
+net.ipv4.tcp_syn_retries = 2           #向外SYN握手重试次数，默认4
+net.ipv4.tcp_tw_recycle = 1            #开启TCP连接中TIME_WAIT sockets的快速回收，默认是0关闭
+net.ipv4.tcp_max_orphans = 3276800     #系统中最多有多少个TCP套接字不被关联到任何一个用户文件句柄上，如果超出这个数字，孤儿连接将立即复位并打印警告信息
+net.ipv4.tcp_mem = 94500000 915000000 927000000
+net.ipv4.tcp_mem[0]:低于此值，TCP没有内存压力；
+net.ipv4.tcp_mem[1]:在此值下，进入内存压力阶段；
+net.ipv4.tcp_mem[2]:高于此值，TCP拒绝分配socket。内存单位是页，可根据物理内存大小进行调整，如果内存足够大的话，可适当往上调。上述内存单位是页，而不是字节。</pre>
+	<p>
+		至此CentOS 6.5_x64最小化安装系统基本优化调整完毕，需要重启下系统。
+	</p>
+	<p>
+		<br />
+	</p>
+(完)
+</p></ul>
+				<div class="share">
+					<!-- Baidu Button BEGIN -->
+					<div id="bdshare" class="bdshare_t bds_tools get-codes-bdshare">
+						<span class="bds_more">分享到：</span>
+						<a class="bds_qzone"></a>
+						<a class="bds_tsina"></a>
+						<a class="bds_tqq"></a>
+						<a class="bds_renren"></a>
+						<a class="bds_t163"></a>
+						<a class="shareCount"></a>
+					</div>
+					<script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=6574585"></script>
+					<script type="text/javascript" id="bdshell_js"></script>
+					<script type="text/javascript">document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date() / 3600000)</script>
+					<!-- Baidu Button END -->
+				</div>
+				<!-- 多说评论框 start -->
+				<div class="ds-thread" data-thread-key="0" data-title="CentOS 6.5安全加固及性能优化" data-url="http://www.imarkofu.com/4/2015-07/y3czFgsSsHKFRsot.html"></div>
+				<!-- 多说评论框 end -->
+			</div>
+			<!--bloglist end-->
+			<aside>
+				<div class="search">
+					<form class="searchform" method="get" action="#">
+						<input type="text" name="s" value="Search" onfocus="this.value=''" onblur="this.value='Search'">
+					</form>
+				</div>
+				<div class="sunnav">
+					<ul>
+						<li><a href="/1/index.html" target="_blank" title="Java">Java</a></li>
+						<li><a href="/3/index.html" target="_blank" title="HTML5 / CSS3">HTML5 / CSS3</a></li>
+						<li><a href="/5/index.html" target="_blank" title="技术探讨">技术探讨</a></li>
+						<li><a href="/6/index.html" target="_blank" title="慢生活">慢生活</a></li>
+					</ul>
+				</div>
+			</aside>
+		</div>
+		<!--blogs end-->
+	</div>
+	<!--mainbody end-->
+	<script type="text/javascript" src="http://www.imarkofu.com//js/footer.js"></script>
+	<!-- jQuery仿腾讯回顶部和建议 代码开始 -->
+	<div id="tbox">
+		<a id="togbook" href="/guestbook.html"></a> <a id="gotop" href="javascript:void(0)"></a>
+	</div>
+	<!-- 代码结束 -->
+</body>
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name : "imarkofu"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);})();
+</script>
+</html>                                                                                                                                          

@@ -1,0 +1,421 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>centos 6.5 编译安装 mysql 5.5.40</title>
+<meta name="keywords" content="imarkofu gbwl_cgl gbwl centos 6.5 编译安装 mysql 5.5.40" />
+<meta name="description" content="centos 6.5 编译安装 mysql 5.5.40" />
+<link href="http://www.imarkofu.com/css/styles.css" rel="stylesheet">
+<link href="http://www.imarkofu.com/css/view.css" rel="stylesheet">
+<!-- 返回顶部调用 begin -->
+<link href="http://www.imarkofu.com/css/lrtk.css" rel="stylesheet" />
+<script type="text/javascript" src="http://www.imarkofu.com/js/jquery.js"></script>
+<script type="text/javascript" src="http://www.imarkofu.com/js/js.js"></script>
+<!-- 返回顶部调用 end-->
+<!--[if lt IE 9]>
+<script src="http://www.imarkofu.com/js/modernizr.js"></script>
+<![endif]-->
+<script>var _hmt = _hmt || [];(function() {  var hm = document.createElement("script");  hm.src = "//hm.baidu.com/hm.js?12b3293398b51d8227d4915298f8c206";  var s = document.getElementsByTagName("script")[0];   s.parentNode.insertBefore(hm, s);})();</script>
+</head>
+<body>
+	<script type="text/javascript" src="http://www.imarkofu.com/js/head.js" charset="utf-8"></script>
+	<!--header end-->
+	<div id="mainbody">
+		<div class="blogs">
+			<div id="index_view">
+				<h2 class="t_nav">
+					<a href="/index.html">网站首页</a><a href="http://www.imarkofu.com/4/index.html">Linux</a>
+				</h2>
+				<h1 class="c_titile">centos 6.5 编译安装 mysql 5.5.40</h1>
+				<p class="box">发布时间：2015-05-08<span>编辑：imarkofu</span></p>
+				<ul><p>
+	在开始之前我们需要准备一些库文件。
+</p>
+<p>
+	<br />
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu ~]# yum install zlib-devel openssl-devel gcc-c++ gcc bison cmake ncurses-devel -y</pre>
+<p>
+	一定要安装这些包， LZ之前没有安装就开始编译MySQL，踩了好多坑， 后来上网一查才发现需要这些文件和管理工具才行。因此一定要安装。
+</p>
+<p>
+	<br />
+</p>
+<p>
+	<strong><span style="color:#E53333;">还有如果大家编译过程中出错, 请一定要执行:</span></strong> 
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu ~]# rm -f CMakeCache.txt</pre>
+<p>
+	之后再继续安装。
+</p>
+<p>
+	安装好之后我们来添加MySQL数据库需要的账户和目录：
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu ~]# groupadd -r mysql
+[root@imarkofu ~]# useradd -g mysql -r -s /sbin/nologin mysql
+[root@imarkofu ~]# id mysql #确认用户
+[root@imarkofu ~]# mkdir /var/data/mysql -p #存放数据库文件
+[root@imarkofu ~]# chown mysql:mysql /var/data -R</pre>
+<p>
+	下载MySQL源码包：<a href="http://pan.baidu.com/s/1c0fdgdE" target="_blank">mysql-5.5.40.tar.gz</a> 
+</p>
+<p>
+	下载后上传到服务器
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu ~]# tar -xvf mysql-5.5.40.tar.gz -C /usr/local/src/
+[root@imarkofu ~]# cd /usr/local/src/mysql-5.5.40</pre>
+<p>
+	cmake编译MySQL的一些常用选项：
+</p>
+<pre class="prettyprint">------------------------------------------------------------
+cmake mysql 编译安装:
+./configure -&gt; cmake .
+./configure --help -&gt; cmake -LH -&gt; ccmake .
+------------------------------------------------------------
+指定安装文件的安装路径常用选项
+-DCMAKE_INSTALL_PREFIX=/usr/local/mysql
+-DMYSQL_DATADIR=/data/mysql
+-DSYSCONFDIR=/etc
+------------------------------------------------------------
+默认编译的存储引擎包括: csv, myisma, myisammrg, heap. 若要安装其他存储引擎,可以使用类似如下的编译选项
+-DWITH_INNOBASE_STORAGE_ENGINE=1
+-DWITH_ARCHIVE_STORAGE_ENGINE=1
+-DWITH_BLACKHOLE_STORAGE_ENGINE=1
+------------------------------------------------------------
+若要明确指出不编译某存储引擎, 可以使用类似如下的选项:
+-DWITHOUT_&lt;ENGINE&gt;_STORAGE_ENGINE=1
+例如:
+-DWITHOUT_EXAMPLE_STORAGE_ENGINE=1
+-DWITHOUT_FEDERATED_STORAGE_ENGINE=1
+------------------------------------------------------------
+若要编译进其他功能, 如SSl等, 可使用类似如下选项来实现编译时使用某库文件或者, 或者不使用某库文件.
+-DWITH_READLINE=1
+-DWITH_SSL=system
+-DWITH_ZLIB=system
+-DWITH_LIBWRAP=0
+------------------------------------------------------------
+其他常用选项:
+-DMYSQL_TCP_PORT=3306
+-MYDQL_UNIX_ADDR=/tmp/mysql.sock
+-DENABLED_LOCAL_INFILE=1
+-DEXTRA_CHARSETS=all
+-DDEFAULT_CHARSET=utf8
+-DDEFAULT_COLLATION=utf8_general_ci
+-DWITH_DEBUG=0
+-DENABLE_PROFILING=1
+------------------------------------------------------------</pre>
+<p>
+	开始编译
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu mysql-5.5.40]# cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql-5.5.40 \
+-DMYSQL_DATADIR=/var/data/mysql \ #数据库目录
+-DSYSCONFDIR=/etc \ #配置文件目录
+-DWITH_INNOBASE_STORAGE_ENGINE=1 \ #启用InnoDB存储引擎
+-DWITH_ARCHIVE_STORAGE_ENGINE=1 \ #启用ARCHIVE存储引擎
+-DWITH_BLACKHOLE_STORAGE_ENGINE=1 \ #启用黑洞存储引擎
+-DWITH_READLINE=1 \
+-DWITH_SSL=system \ #启用SSL协议
+-DWITH_ZLIB=system \ #启用Zlib压缩
+-DWITH_LIBWRAP=0 \
+-DDEFAULT_CHARSET=utf8 \ #设置字符集utf8
+-DMYSQL_UNIX_ADDR=/tmp/mysql.sock \
+-DDEFAULT_COLLATION=utf8_general_ci</pre>
+<p>
+	如果出现以下信息，那么恭喜你第一阶段的配置顺利完成了
+</p>
+<p>
+	过程中如果出现错误也不要害怕， 因为你长经验的时刻就要来了， 通常是因为缺少了什么依赖的包而出现的问题， 你可以把你的错误信息铁道Google或者百度中去搜索。
+</p>
+<pre class="prettyprint lang-bsh">....(此处省略一万字)
+-- Performing Test HAVE_IB_GCC_ATOMIC_BUILTINS
+-- Performing Test HAVE_IB_GCC_ATOMIC_BUILTINS - Success
+-- Performing Test HAVE_IB_ATOMIC_PTHREAD_T_GCC
+-- Performing Test HAVE_IB_ATOMIC_PTHREAD_T_GCC - Success
+-- Check size of pthread_t
+-- Check size of pthread_t - done
+-- Performing Test HAVE_PEERCRED
+-- Performing Test HAVE_PEERCRED - Success
+-- Library mysqlclient depends on OSLIBS -lpthread;z;m;rt;/usr/lib64/libssl.so;/usr/lib64/libcrypto.so;dl
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/mysql-5.5.40</pre>
+继续
+<p>
+	<br />
+</p>
+<p>
+	<br />
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu mysql-5.5.40]# make
+....(此处省略一万字)
+Scanning dependencies of target udf_example
+[100%] Building C object sql/CMakeFiles/udf_example.dir/udf_example.c.o
+Linking C shared module udf_example.so
+[100%] Built target udf_example
+Scanning dependencies of target my_safe_process
+[100%] Building CXX object mysql-test/lib/My/SafeProcess/CMakeFiles/my_safe_process.dir/safe_process.cc.o
+Linking CXX executable my_safe_process
+[100%] Built target my_safe_process</pre>
+<p>
+	如果没有报错，继续
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu mysql-5.5.40]# make install
+....(此处省略一万字)
+-- Installing: /usr/local/mysql-5.5.40/man/man1/mysql_upgrade.1
+-- Installing: /usr/local/mysql-5.5.40/man/man1/mysqlslap.1
+-- Installing: /usr/local/mysql-5.5.40/man/man1/replace.1
+-- Installing: /usr/local/mysql-5.5.40/man/man1/mysql.1
+-- Installing: /usr/local/mysql-5.5.40/man/man1/mysql_setpermission.1
+-- Installing: /usr/local/mysql-5.5.40/man/man1/mysql_secure_installation.1
+-- Installing: /usr/local/mysql-5.5.40/man/man1/mysqlimport.1
+-- Installing: /usr/local/mysql-5.5.40/man/man8/mysqld.8</pre>
+<p>
+	全部安装ok之后我们来配置下文档的权限
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu mysql-5.5.40]# chown :mysql /usr/local/mysql-5.5.40 -R
+[root@imarkofu mysql-5.5.40]# cd /usr/local/mysql-5.5.40/
+[root@imarkofu mysql-5.5.40]# chmod +x scripts/mysql_install_db
+[root@imarkofu mysql-5.5.40]# scripts/mysql_install_db --user=mysql --datadir=/var/data/mysql/ #执行初始化脚本
+ 
+ 
+....(此处省略一万字)
+./bin/mysqladmin -u root password 'new-password'
+./bin/mysqladmin -u root -h imarkofu password 'new-password'
+ 
+Alternatively you can run:
+./bin/mysql_secure_installation
+ 
+which will also give you the option of removing the test
+databases and anonymous user created by default.  This is
+strongly recommended for production servers.
+ 
+See the manual for more instructions.
+ 
+You can start the MySQL daemon with:
+cd . ; ./bin/mysqld_safe &amp;
+ 
+You can test the MySQL daemon with mysql-test-run.pl
+cd ./mysql-test ; perl mysql-test-run.pl
+ 
+Please report any problems at http://bugs.mysql.com/</pre>
+<p>
+	如果你获得的信息和上面一样的话, 恭喜你, 你又离成功近了一步
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu mysql-5.5.40]# ls /var/data/mysql/ #看一下是否生成了文件
+mysql  performance_schema  test
+#如果是这样那么我们继续</pre>
+<p>
+	创建服务脚本
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu mysql-5.5.40]# cp support-files/mysql.server /etc/rc.d/init.d/mysqld 
+[root@imarkofu mysql-5.5.40]# chmod +x /etc/rc.d/init.d/mysqld #添加mysqld执行权限
+[root@imarkofu mysql-5.5.40]# chkconfig --add mysqld #添加开机启动</pre>
+<p>
+	创建配置文件
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu mysql-5.5.40]# mv /etc/my.cnf{,.bak}
+[root@imarkofu mysql-5.5.40]# cp support-files/my-large.cnf /etc/my.cnf
+[root@imarkofu mysql-5.5.40]# vim /etc/my.cnf
+ 
+#找到如下部分
+[mysqld]
+port            = 3306
+socket          = /tmp/mysql.sock
+skip-external-locking
+key_buffer_size = 256M
+max_allowed_packet = 1M
+table_open_cache = 256
+sort_buffer_size = 1M
+read_buffer_size = 1M
+read_rnd_buffer_size = 4M
+myisam_sort_buffer_size = 64M
+thread_cache_size = 8
+query_cache_size= 16M
+# Try number of CPU's*2 for thread_concurrency
+thread_concurrency = 8
+datadir= /var/data/mysql #添加次行内容, 就是数据库文件存放路径
+:wq
+#保存退出
+ 
+[root@imarkofu mysql-5.5.40]# vim /etc/profile.d/mysql.sh
+export PATH=/usr/local/mysql-5.5.40/bin:$PATH #添加次行
+ 
+[root@imarkofu mysql-5.5.40]# . /etc/profile.d/mysql.sh #导入环境变量</pre>
+<p>
+	好了，尝试着启动MySQL服务
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu mysql-5.5.40]# service mysqld start
+Starting MySQL..                                           [  OK  ]
+[root@imarkofu mysql-5.5.40]#
+[root@imarkofu mysql-5.5.40]# ss -tnl| grep :3306 
+LISTEN     0      50                        *:3306                     *:*    
+#发现正常监听 3306端口</pre>
+<p>
+	距离胜利越来越近了
+</p>
+<p>
+	然后配置MySQL管理员密码进行初始化
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu mysql-5.5.40]# mysql #使用客户端登录
+ 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 1
+Server version: 5.5.40-log Source distribution
+ 
+Copyright (c) 2000, 2014, Oracle and/or its affiliates. All rights reserved.
+ 
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+ 
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+ 
+mysql&gt; 
+#查看一下默认存在的用户
+ 
+mysql&gt; select user,password,host from mysql.user; 
++------+----------+-----------+
+| user | password | host      |
++------+----------+-----------+
+| root |          | localhost |
+| root |          | imarkofu  |
+| root |          | 127.0.0.1 |
+| root |          | ::1       |
+|      |          | localhost |
+|      |          | imarkofu  |
++------+----------+-----------+
+6 rows in set (0.00 sec)
+ 
+mysql&gt; 
+ 
+ 
+#删除默认存在的账户, 要求用户只能从本地服务器访问数据库
+mysql&gt; delete from mysql.user where host!='localhost'; 
+Query OK, 4 rows affected (0.00 sec)
+ 
+#修改root管理员账号密码
+mysql&gt; update mysql.user set password=PASSWORD('p@ssw0rd') where user='root'; 
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+ 
+#更新数据库
+mysql&gt; FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.00 sec)
+ 
+#看一下修改后的结果
+mysql&gt; select user,password,host from mysql.user;
++------+-------------------------------------------+-----------+
+| user | password                                  | host      |
++------+-------------------------------------------+-----------+
+| root | *D7E39C3AF517EC9EF7086223B036E0B4F22821F8 | localhost |
+|      |                                           | localhost |
++------+-------------------------------------------+-----------+
+2 rows in set (0.00 sec)
+ 
+mysql&gt; \q
+Bye
+[root@imarkofu mysql-5.5.40]#</pre>
+<p>
+	然后就可以使用新密码登陆了
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu mysql-5.5.40]# mysql -u root -h localhost -p
+Enter password: #输入刚才设置的密码
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 4
+Server version: 5.5.40-log Source distribution
+ 
+Copyright (c) 2000, 2014, Oracle and/or its affiliates. All rights reserved.
+ 
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+ 
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+ 
+mysql&gt;</pre>
+<p>
+	好了MySQL到此 就安装成功了
+</p>
+<p>
+	对了，忘记了导入开发的库文件了， ok 很快就好
+</p>
+<pre class="prettyprint lang-bsh">[root@imarkofu mysql-5.5.40]# ln -sv /usr/local/mysql/include/ /usr/include/mysql #软连接到系统库中
+[root@imarkofu mysql-5.5.40]# vim /etc/ld.so.conf.d/mysql.conf #编辑这个文件, 并且添加如下路径
+ 
+/usr/local/mysql-5.5.40/lib
+ 
+[root@imarkofu mysql-5.5.40]# ldconfig #重新加载库文件
+[root@imarkofu mysql-5.5.40]# ldconfig -p | grep mysql #让我们来检查下是不是加载好了
+    libmysqlclient_r.so.16 (libc6,x86-64) =&gt; /usr/lib64/mysql/libmysqlclient_r.so.16
+    libmysqlclient.so.18 (libc6,x86-64) =&gt; /usr/local/mysql-5.5.40/lib/libmysqlclient.so.18
+    libmysqlclient.so.16 (libc6,x86-64) =&gt; /usr/lib64/mysql/libmysqlclient.so.16
+    libmysqlclient.so (libc6,x86-64) =&gt; /usr/local/mysql-5.5.40/lib/libmysqlclient.so</pre>
+<p>
+	至此，MySQL5.5.40 编译安装完成
+</p>
+<p>
+	<br />
+</p>
+<p>
+	<br />
+</p></ul>
+				<div class="share">
+					<!-- Baidu Button BEGIN -->
+					<div id="bdshare" class="bdshare_t bds_tools get-codes-bdshare">
+						<span class="bds_more">分享到：</span>
+						<a class="bds_qzone"></a>
+						<a class="bds_tsina"></a>
+						<a class="bds_tqq"></a>
+						<a class="bds_renren"></a>
+						<a class="bds_t163"></a>
+						<a class="shareCount"></a>
+					</div>
+					<script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=6574585"></script>
+					<script type="text/javascript" id="bdshell_js"></script>
+					<script type="text/javascript">document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date() / 3600000)</script>
+					<!-- Baidu Button END -->
+				</div>
+				<!-- 多说评论框 start -->
+				<div class="ds-thread" data-thread-key="0" data-title="centos 6.5 编译安装 mysql 5.5.40" data-url="http://www.imarkofu.com/4/2015-05/5qB7nW9zpwcMBxOf.html"></div>
+				<!-- 多说评论框 end -->
+			</div>
+			<!--bloglist end-->
+			<aside>
+				<div class="search">
+					<form class="searchform" method="get" action="#">
+						<input type="text" name="s" value="Search" onfocus="this.value=''" onblur="this.value='Search'">
+					</form>
+				</div>
+				<div class="sunnav">
+					<ul>
+						<li><a href="/1/index.html" target="_blank" title="Java">Java</a></li>
+						<li><a href="/3/index.html" target="_blank" title="HTML5 / CSS3">HTML5 / CSS3</a></li>
+						<li><a href="/5/index.html" target="_blank" title="技术探讨">技术探讨</a></li>
+						<li><a href="/6/index.html" target="_blank" title="慢生活">慢生活</a></li>
+					</ul>
+				</div>
+			</aside>
+		</div>
+		<!--blogs end-->
+	</div>
+	<!--mainbody end-->
+	<script type="text/javascript" src="http://www.imarkofu.com//js/footer.js"></script>
+	<!-- jQuery仿腾讯回顶部和建议 代码开始 -->
+	<div id="tbox">
+		<a id="togbook" href="/guestbook.html"></a> <a id="gotop" href="javascript:void(0)"></a>
+	</div>
+	<!-- 代码结束 -->
+</body>
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name : "imarkofu"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);})();
+</script>
+</html>                                                                                                                                          

@@ -1,0 +1,329 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>curl命令使用指南</title>
+<meta name="keywords" content="imarkofu gbwl_cgl gbwl curl命令使用指南" />
+<meta name="description" content="curl命令使用指南" />
+<link href="http://www.imarkofu.com/css/styles.css" rel="stylesheet">
+<link href="http://www.imarkofu.com/css/view.css" rel="stylesheet">
+<!-- 返回顶部调用 begin -->
+<link href="http://www.imarkofu.com/css/lrtk.css" rel="stylesheet" />
+<script type="text/javascript" src="http://www.imarkofu.com/js/jquery.js"></script>
+<script type="text/javascript" src="http://www.imarkofu.com/js/js.js"></script>
+<!-- 返回顶部调用 end-->
+<!--[if lt IE 9]>
+<script src="http://www.imarkofu.com/js/modernizr.js"></script>
+<![endif]-->
+<script>var _hmt = _hmt || [];(function() {  var hm = document.createElement("script");  hm.src = "//hm.baidu.com/hm.js?12b3293398b51d8227d4915298f8c206";  var s = document.getElementsByTagName("script")[0];   s.parentNode.insertBefore(hm, s);})();</script>
+</head>
+<body>
+	<script type="text/javascript" src="http://www.imarkofu.com/js/head.js" charset="utf-8"></script>
+	<!--header end-->
+	<div id="mainbody">
+		<div class="blogs">
+			<div id="index_view">
+				<h2 class="t_nav">
+					<a href="/index.html">网站首页</a><a href="http://www.imarkofu.com/4/index.html">Linux</a>
+				</h2>
+				<h1 class="c_titile">curl命令使用指南</h1>
+				<p class="box">发布时间：2015-07-15<span>编辑：imarkofu</span></p>
+				<ul><p>
+	我一向以为，curl只是一个编程用的函数库。
+</p>
+<p>
+	最近才发现，这个命令本身，就是一个无比有用的网站开发工具，请看我整理的它的用法。
+</p>
+<p>
+	<br />
+</p>
+<hr />
+<p>
+	<br />
+</p>
+<p>
+	<a href="http://curl.haxx.se/" target="_blank">curl</a>是一种命令行工具，作用是发出网络请求，然后得到和提取数据，显示在"标准输出"（stdout）上面。
+</p>
+<p>
+	<br />
+</p>
+<p>
+	<br />
+</p>
+<p>
+	它支持多种协议，下面举例讲解如何将它用于网站开发。
+</p>
+<h3>
+	一、查看网页源码
+</h3>
+<p>
+	直接在curl命令后加上网址，就可以看到网页源码。我们以网址www.sina.com为例（选择该网址，主要因为它的网页代码较短）：
+</p>
+<pre class="prettyprint lang-bsh">curl www.sina.com</pre>
+<pre class="prettyprint lang-bsh">&lt;html&gt;
+&lt;head&gt;&lt;title&gt;301 Moved Permanently&lt;/title&gt;&lt;/head&gt;
+&lt;body bgcolor="white"&gt;
+&lt;center&gt;&lt;h1&gt;301 Moved Permanently&lt;/h1&gt;&lt;/center&gt;
+&lt;hr&gt;&lt;center&gt;nginx&lt;/center&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+<p>
+	如果要把这个网页保存下来，可以使用-o参数，这就相当于使用wget命令了。
+</p>
+<pre class="prettyprint lang-bsh">curl -o [文件名] www.sina.com</pre>
+<h3>
+	二、自动跳转
+</h3>
+<p>
+	有的网址是自动跳转的。使用-L参数，curl就会跳转到新的网址。
+</p>
+<pre class="prettyprint lang-bsh">curl -L www.sina.com</pre>
+<p>
+	键入上面的命令，结果就自动跳转为www.sina.com.cn。
+</p>
+<h3>
+	三、显示头信息
+</h3>
+<p>
+	-i参数可以显示http response的头信息，连同网页代码一起。
+</p>
+<pre class="prettyprint lang-bsh">curl -i www.sina.com</pre>
+<pre class="prettyprint lang-bsh">HTTP/1.1 301 Moved Permanently
+Server: nginx
+Date: Wed, 15 Jul 2015 12:30:18 GMT
+Content-Type: text/html
+Location: http://www.sina.com.cn/
+Expires: Wed, 15 Jul 2015 12:32:18 GMT
+Cache-Control: max-age=120
+Age: 6
+Content-Length: 178
+X-Cache: HIT from localhost
+
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;301 Moved Permanently&lt;/title&gt;&lt;/head&gt;
+&lt;body bgcolor="white"&gt;
+&lt;center&gt;&lt;h1&gt;301 Moved Permanently&lt;/h1&gt;&lt;/center&gt;
+&lt;hr&gt;&lt;center&gt;nginx&lt;/center&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+<p>
+	-I参数则是只显示http response的头信息。
+</p>
+<h3>
+	四、显示通信过程
+</h3>
+<p>
+	-v参数可以显示一次http通信的整个过程，包括端口连接和http request头信息。
+</p>
+<pre class="prettyprint lang-bsh">curl -v www.sina.com</pre>
+<pre class="prettyprint lang-bsh">* About to connect() to www.sina.com port 80 (#0)
+*   Trying 61.172.201.194... connected
+* Connected to www.sina.com (61.172.201.194) port 80 (#0)
+&gt; GET / HTTP/1.1
+&gt; User-Agent: curl/7.19.7 (x86_64-redhat-linux-gnu) libcurl/7.19.7 NSS/3.16.2.3 Basic ECC zlib/1.2.3 libidn/1.18 libssh2/1.4.2
+&gt; Host: www.sina.com
+&gt; Accept: */*
+&gt; 
+&lt; HTTP/1.1 301 Moved Permanently
+&lt; Server: nginx
+&lt; Date: Wed, 15 Jul 2015 12:32:01 GMT
+&lt; Content-Type: text/html
+&lt; Location: http://www.sina.com.cn/
+&lt; Expires: Wed, 15 Jul 2015 12:34:01 GMT
+&lt; Cache-Control: max-age=120
+&lt; Age: 7
+&lt; Content-Length: 178
+&lt; X-Cache: HIT from localhost
+&lt; 
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;301 Moved Permanently&lt;/title&gt;&lt;/head&gt;
+&lt;body bgcolor="white"&gt;
+&lt;center&gt;&lt;h1&gt;301 Moved Permanently&lt;/h1&gt;&lt;/center&gt;
+&lt;hr&gt;&lt;center&gt;nginx&lt;/center&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+<p>
+	如果你觉得上面的信息还不够，那么下面的命令可以查看更详细的通信过程。
+</p>
+<pre class="prettyprint lang-bsh">curl --trace output.txt www.sina.com</pre>
+<p>
+	或者
+</p>
+<pre class="prettyprint lang-bsh">curl --trace-ascii output.txt www.sina.com</pre>
+<p>
+	运行后，请打开output.txt文件查看。
+</p>
+<h3>
+	五、发送表单信息
+</h3>
+<p>
+	<br />
+</p>
+<p>
+	发送表单信息有GET和POST两种方法。GET方法相对简单，只要把数据附在网址后面就行。
+</p>
+<p>
+	<br />
+</p>
+<pre class="prettyprint lang-bsh">curl example.com/form.cgi?data=xxx</pre>
+<p>
+	POST方法必须把数据和网址分开，curl就要用到--data参数。
+</p>
+<pre class="prettyprint lang-bsh">curl --data "data=xxx" example.com/form.cgi</pre>
+<p>
+	如果你的数据没有经过表单编码，还可以让curl为你编码，参数是--data-urlencode。
+</p>
+<pre class="prettyprint lang-bsh">curl --data-urlencode "date=April 1" example.com/form.cgi</pre>
+<h3>
+	六、HTTP动词
+</h3>
+<p>
+	curl默认的HTTP动词是GET，使用-X参数可以支持其他动词。
+</p>
+<p>
+	<br />
+</p>
+<pre class="prettyprint lang-bsh">curl -X POST www.example.com</pre>
+<pre class="prettyprint lang-bsh">curl -X DELETE www.example.com</pre>
+<h3>
+	七、文件上传
+</h3>
+<p>
+	假定文件上传的表单是下面这样：
+</p>
+<p>
+	<br />
+</p>
+<pre class="prettyprint lang-html">&lt;form method="POST" enctype='multipart/form-data' action="upload.cgi"&gt;
+        &lt;input type=file name=upload&gt;
+        &lt;input type=submit name=press value="OK"&gt;
+&lt;/form&gt;</pre>
+<p>
+	你可以用curl这样上传文件：
+</p>
+<pre class="prettyprint lang-bsh">curl --form upload=@localfilename --form press=OK [URL]</pre>
+<h3>
+	八、Referer字段
+</h3>
+<p>
+	有时你需要在http request头信息中，提供一个referer字段，表示你是从哪里跳转过来的。
+</p>
+<p>
+	<br />
+</p>
+<pre class="prettyprint lang-bsh">curl --referer http://www.example.com http://www.example.com</pre>
+<h3>
+	九、User Agent字段
+</h3>
+<p>
+	这个字段是用来表示客户端的设备信息。服务器有时会根据这个字段，针对不同设备，返回不同格式的网页，比如手机版和桌面版。
+</p>
+<p>
+	iPhone4的User Agent是
+</p>
+<p>
+	<br />
+</p>
+<pre class="prettyprint">Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7</pre>
+<p>
+	curl可以这样模拟：
+</p>
+<p>
+<pre class="prettyprint lang-bsh">curl --user-agent "[User Agent]" [URL]</pre>
+</p>
+<p>
+	<h3>
+		十、cookie
+	</h3>
+	<p>
+		使用--cookie参数，可以让curl发送cookie。
+	</p>
+	<p>
+		<br />
+	</p>
+<pre class="prettyprint lang-bsh">curl --cookie "name=xxx" www.example.com</pre>
+	<p>
+		至于具体的cookie的值，可以从http response头信息的Set-Cookie字段中得到。
+	</p>
+	<h3>
+		十一、增加头信息
+	</h3>
+	<p>
+		有时需要在http request之中，自行增加一个头信息。--header参数就可以起到这个作用。
+	</p>
+	<p>
+		<br />
+	</p>
+<pre class="prettyprint lang-bsh">curl --header "Content-Type:application/json" http://example.com</pre>
+	<h3>
+		十二、HTTP认证
+	</h3>
+	<p>
+		有些网域需要HTTP认证，这时curl需要用到--user参数。
+	</p>
+	<p>
+		<br />
+	</p>
+<pre class="prettyprint lang-bsh">curl --user name:password example.com</pre>
+（完）
+</p></ul>
+				<div class="share">
+					<!-- Baidu Button BEGIN -->
+					<div id="bdshare" class="bdshare_t bds_tools get-codes-bdshare">
+						<span class="bds_more">分享到：</span>
+						<a class="bds_qzone"></a>
+						<a class="bds_tsina"></a>
+						<a class="bds_tqq"></a>
+						<a class="bds_renren"></a>
+						<a class="bds_t163"></a>
+						<a class="shareCount"></a>
+					</div>
+					<script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=6574585"></script>
+					<script type="text/javascript" id="bdshell_js"></script>
+					<script type="text/javascript">document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date() / 3600000)</script>
+					<!-- Baidu Button END -->
+				</div>
+				<!-- 多说评论框 start -->
+				<div class="ds-thread" data-thread-key="0" data-title="curl命令使用指南" data-url="http://www.imarkofu.com/4/2015-07/iRHDMlGWZZRjiF6T.html"></div>
+				<!-- 多说评论框 end -->
+			</div>
+			<!--bloglist end-->
+			<aside>
+				<div class="search">
+					<form class="searchform" method="get" action="#">
+						<input type="text" name="s" value="Search" onfocus="this.value=''" onblur="this.value='Search'">
+					</form>
+				</div>
+				<div class="sunnav">
+					<ul>
+						<li><a href="/1/index.html" target="_blank" title="Java">Java</a></li>
+						<li><a href="/3/index.html" target="_blank" title="HTML5 / CSS3">HTML5 / CSS3</a></li>
+						<li><a href="/5/index.html" target="_blank" title="技术探讨">技术探讨</a></li>
+						<li><a href="/6/index.html" target="_blank" title="慢生活">慢生活</a></li>
+					</ul>
+				</div>
+			</aside>
+		</div>
+		<!--blogs end-->
+	</div>
+	<!--mainbody end-->
+	<script type="text/javascript" src="http://www.imarkofu.com//js/footer.js"></script>
+	<!-- jQuery仿腾讯回顶部和建议 代码开始 -->
+	<div id="tbox">
+		<a id="togbook" href="/guestbook.html"></a> <a id="gotop" href="javascript:void(0)"></a>
+	</div>
+	<!-- 代码结束 -->
+</body>
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name : "imarkofu"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);})();
+</script>
+</html>                                                                                                                                          

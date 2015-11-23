@@ -2,9 +2,9 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>$title</title>
-<meta name="keywords" content="imarkofu gbwl_cgl gbwl $title" />
-<meta name="description" content="$title" />
+<title>$title - Imarkofu的博客</title>
+<meta name="keywords" content="$title Imarkofu 攺變耒莱 gbwl_cgl" />
+<meta name="description" content="$title Imarkofu的个人博客 攺變耒莱的个人博客" />
 <link href="$main_domaincss/styles.css" rel="stylesheet">
 <link href="$main_domaincss/view.css" rel="stylesheet">
 <!-- 返回顶部调用 begin -->

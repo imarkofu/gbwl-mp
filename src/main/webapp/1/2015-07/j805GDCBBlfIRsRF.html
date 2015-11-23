@@ -1,0 +1,223 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>使用jconsole连接linux服务器查看JVM使用情况，服务器配置记录</title>
+<meta name="keywords" content="imarkofu gbwl_cgl gbwl 使用jconsole连接linux服务器查看JVM使用情况，服务器配置记录" />
+<meta name="description" content="使用jconsole连接linux服务器查看JVM使用情况，服务器配置记录" />
+<link href="http://www.imarkofu.com/css/styles.css" rel="stylesheet">
+<link href="http://www.imarkofu.com/css/view.css" rel="stylesheet">
+<!-- 返回顶部调用 begin -->
+<link href="http://www.imarkofu.com/css/lrtk.css" rel="stylesheet" />
+<script type="text/javascript" src="http://www.imarkofu.com/js/jquery.js"></script>
+<script type="text/javascript" src="http://www.imarkofu.com/js/js.js"></script>
+<!-- 返回顶部调用 end-->
+<!--[if lt IE 9]>
+<script src="http://www.imarkofu.com/js/modernizr.js"></script>
+<![endif]-->
+<script>var _hmt = _hmt || [];(function() {  var hm = document.createElement("script");  hm.src = "//hm.baidu.com/hm.js?12b3293398b51d8227d4915298f8c206";  var s = document.getElementsByTagName("script")[0];   s.parentNode.insertBefore(hm, s);})();</script>
+</head>
+<body>
+	<script type="text/javascript" src="http://www.imarkofu.com/js/head.js" charset="utf-8"></script>
+	<!--header end-->
+	<div id="mainbody">
+		<div class="blogs">
+			<div id="index_view">
+				<h2 class="t_nav">
+					<a href="/index.html">网站首页</a><a href="http://www.imarkofu.com/1/index.html">Java</a>
+				</h2>
+				<h1 class="c_titile">使用jconsole连接linux服务器查看JVM使用情况，服务器配置记录</h1>
+				<p class="box">发布时间：2015-07-24<span>编辑：imarkofu</span></p>
+				<ul><p>
+	最近一段时间，线上服务器上的服务出现了一次很奇怪的问题，Tomcat设定最大内存使用1G，而进程实际使用仅200M左右，结果日志中打印出OOM异常，使我百思不得其解。
+</p>
+<p>
+	<br />
+</p>
+<hr />
+最初打算使用Java自带的jmap入手，想看看堆栈信息，垃圾回收是否正常（本人太菜，知道这些命令是干啥的可以怎么用，可是打印出来的数据似乎不怎么看得懂的样子）。折腾了大半天，个人感觉打印的信息应该没有什么问题，查看MySQL的连接情况也是正常。
+<p>
+	<br />
+</p>
+<p>
+	于是乎，换了中思路来想这个问题。根据错误日志的内容来分析定位，最终根据日志的定位找到了数据库连接池中，不能创建线程了，我们使用的是dbcp数据库连接池，然后网上查了一下这个连接池，好像网上对他的评价不是很好嘛！！！这里我就不再去赘述他的不是了，你可以自己去百度或谷歌查查就知道了。据了解<span style="line-height:1.5;">在hibernate3.0中，已经不再支持dbcp了，hibernate的作者在hibernate.org中，明确指出在实践中发现 dbcp有BUG，在某些种情会产生很多空连接不能释放，所以抛弃了对dbcp的支持。</span>
+</p>
+<p>
+	<span style="line-height:1.5;">然后把这个可能造成事故的原因反应给老大之后，老大查了他之前的一些项目运行远比这个项目长的都是使用的dbcp数据库连接池，而且都没有出问题。为什么单单我负责的这个就出问题了呢？所以又盲目了。于是乎重启了服务，问题又放这儿了。</span>
+</p>
+<p>
+	<span style="line-height:1.5;"></span>
+</p>
+<hr />
+后来网上看到jconsole可以连接到远程的Tomcat服务，进行相关数据的监控和线程查看等等。
+<p>
+	<br />
+</p>
+<p>
+	<span style="line-height:1.5;">于是决定自己先在本地搞一个来玩玩，然后看情况在线程开个端口连上去看看。</span>
+</p>
+<p>
+	<span style="line-height:1.5;"></span>
+</p>
+<p>
+	刚开始配置服务器的JMX之前，在网上搜索一些相关的文章和资料，总体给我的感觉，这个so easy吗，改改配置轻松搞定。只需要修改一下tomcat的启动文件就OK了，所以就在本地下手开始搞了。后来搞了半天都没有搞成功，悲剧了。。。懊恼气愤之余，终于静下心好好看一下别人的文章，然后分析了一下，最后根据网上写的和自己的分析终于还算是凑合搞定了，这里记录一下
+</p>
+<p>
+	<br />
+</p>
+<hr />
+<p>
+	首先配置tomcat的bin文件夹下面的catalina.sh文件（因为我是Linux平台，Windows平台同理.bat文件），这个地方网上的资料显示可以简单的配置了一下，都没有涉及到访问权限和密码相关的配置，个人感觉这样不太好，这毕竟是要应用到线上服务器的是吧，总不能随便来个人都能连上你的服务器上乱搞吧，配置一下密码总归是会好点的嘛^_^，访问权限和密码文件怎么搞呢，实际上还是挺简单的，我们从jdk的安装目录copy两个文件过来修改一下就可以了，一个文件是用于设置访问用户，另一个文件是设置密码用，这里我们把配置文件放在tomcat的conf文件夹下面
+</p>
+<p>
+	首先进入tomcat的conf目录下
+</p>
+<p>
+	<br />
+</p>
+<pre class="prettyprint lang-bsh">cp /opt/service/jdk1.7/jre/lib/management/jmxremote.access ./jmxremote.access 
+
+cp /opt/service/jdk1.7/jre/lib/management/jmxremote.password.template ./jmxremote.password</pre>
+拷贝得到这两个文件，然后还需要修改一下这两个文件的访问权限【这个很关键的哦，亲~】
+<p>
+	<br />
+</p>
+<p>
+	<span style="line-height:1.5;"> </span>
+</p>
+<pre class="prettyprint lang-bsh">chmod 700 jmxremote.password
+chmod 700 jmxremote.access</pre>
+<p>
+	然后编辑<span style="line-height:1.5;">jmxremote.password文件，在文件最后增加一行</span>
+</p>
+<p>
+	<span style="line-height:1.5;">用户名 &nbsp;密码</span>
+</p>
+<p>
+	<br />
+</p>
+<p>
+	<span style="line-height:1.5;">示例：imarkofu 123456</span>
+</p>
+<p>
+	然后编辑<span style="line-height:1.5;">jmxremote.access文件，将文件的最后两行全部注释掉，增加我们自己的访问权限</span>
+	<p>
+		<br />
+	</p>
+</p>
+<p>
+	用户名 &nbsp;readwrite/readonly
+</p>
+<p>
+	示例：imarkofu readwrite
+</p>
+<p>
+	我给自己的账户分配了一个读和写的权限
+</p>
+<p>
+	到这里我们的准备工作基本就已经OK了
+</p>
+<p>
+	下一步就是要配置tomcat的catalina.sh文件了
+</p>
+<p>
+	编辑catalina.sh文件，首先是要定位到下面这一行记录的未知
+</p>
+<p>
+<pre class="prettyprint lang-bsh"># ----- Execute The Requested Command -----------------------------------------</pre>
+在这句话的上面加上下面这些配置，先解释一下这些参数的含义
+</p>
+<p>
+<pre class="prettyprint lang-bsh">-Dcom.sun.management.jmxremote 启用JMX远程监控
+-Dcom.sun.management.jmxremote.port=9004 使用端口9004(可随意指定只要不冲突)
+-Dcom.sun.management.jmxremote.authenticate=true 远程连接需要密码认证
+-Dcom.sun.management.jmxremote.ssl=false 不使用SSL(SSL我试了多次都没有配置成功:P 暂时不开启) 
+-Dcom.sun.management.jmxremote.access.file=/opt/service/tomcat/conf/jmxremote.access 使用指定的JMX帐号授权文件 
+-Dcom.sun.management.jmxremote.password.file=/opt/service/tomcat/conf/jmxremote.password 使用指定的JMX帐号文件)</pre>
+综上所述我们就是要把以下信息加入到配置文件当中去
+</p>
+<p>
+<pre class="prettyprint lang-bsh"># ----- JMX Config Start ----- 
+JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=10207 -Dcom.sun.management.jmxremote.authenticate=true -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.access.file=/opt/service/tomcat/conf/jmxremote.access -Dcom.sun.management.jmxremote.password.file=/opt/service/tomcat/conf/jmxremote.password"
+export JAVA_OPTS 
+# ----- JMX Config End -----</pre>
+保存并退出文件，然后启动tomcat，你应该就可以使用jconsole访问你的服务了
+</p>
+<p>
+	<br />
+</p>
+<p>
+	其实到这里，有可能你还是不能够通过jconsole远程连到你的服务上，具体什么原因呢？
+</p>
+<p>
+	可能是因为你主机的IP没有配置好，你需要执行一下命令hostname -i，如果没有显示正确的IP地址，而是显示unknown host或者是显示127.0.0.1时，你就需要配置一下/etc/hosts这个文件了
+</p>
+<p>
+	示例：IP地址 &nbsp; 主机名
+</p>
+<p>
+	这样配置之后，就能保证能够远程连上的的服务上进行监控了
+</p>
+<p>
+	（完）
+</p></ul>
+				<div class="share">
+					<!-- Baidu Button BEGIN -->
+					<div id="bdshare" class="bdshare_t bds_tools get-codes-bdshare">
+						<span class="bds_more">分享到：</span>
+						<a class="bds_qzone"></a>
+						<a class="bds_tsina"></a>
+						<a class="bds_tqq"></a>
+						<a class="bds_renren"></a>
+						<a class="bds_t163"></a>
+						<a class="shareCount"></a>
+					</div>
+					<script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=6574585"></script>
+					<script type="text/javascript" id="bdshell_js"></script>
+					<script type="text/javascript">document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date() / 3600000)</script>
+					<!-- Baidu Button END -->
+				</div>
+				<!-- 多说评论框 start -->
+				<div class="ds-thread" data-thread-key="0" data-title="使用jconsole连接linux服务器查看JVM使用情况，服务器配置记录" data-url="http://www.imarkofu.com/1/2015-07/j805GDCBBlfIRsRF.html"></div>
+				<!-- 多说评论框 end -->
+			</div>
+			<!--bloglist end-->
+			<aside>
+				<div class="search">
+					<form class="searchform" method="get" action="#">
+						<input type="text" name="s" value="Search" onfocus="this.value=''" onblur="this.value='Search'">
+					</form>
+				</div>
+				<div class="sunnav">
+					<ul>
+						<li><a href="/1/index.html" target="_blank" title="Java">Java</a></li>
+						<li><a href="/3/index.html" target="_blank" title="HTML5 / CSS3">HTML5 / CSS3</a></li>
+						<li><a href="/5/index.html" target="_blank" title="技术探讨">技术探讨</a></li>
+						<li><a href="/6/index.html" target="_blank" title="慢生活">慢生活</a></li>
+					</ul>
+				</div>
+			</aside>
+		</div>
+		<!--blogs end-->
+	</div>
+	<!--mainbody end-->
+	<script type="text/javascript" src="http://www.imarkofu.com//js/footer.js"></script>
+	<!-- jQuery仿腾讯回顶部和建议 代码开始 -->
+	<div id="tbox">
+		<a id="togbook" href="/guestbook.html"></a> <a id="gotop" href="javascript:void(0)"></a>
+	</div>
+	<!-- 代码结束 -->
+</body>
+<script type="text/javascript">
+	var duoshuoQuery = {
+		short_name : "imarkofu"
+	};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';
+		ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);})();
+</script>
+</html>                                                                                                                                          
