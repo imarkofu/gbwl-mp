@@ -20,4 +20,5 @@ buildNumber.properties
 .mvn/timing.properties
 .classpath
 .project
-settings/
+.settings/
+/bin/
